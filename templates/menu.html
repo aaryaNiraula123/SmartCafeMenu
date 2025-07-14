@@ -1,148 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Café Menu</title>
-  <style>
-    :root {
-      --primary: #5a3825;
-      --accent: #d9b382;
-      --background: #f5f3ef;
-      --text: #333;
-      --card: #fff;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--background);
-      color: var(--text);
-      padding: 0 10px;
-    }
-
-    header {
-      background-color: var(--primary);
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2rem;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 30px auto;
-      padding: 0 15px;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .menu-item {
-      background-color: var(--card);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease;
-    }
-
-    .menu-item:hover {
-      transform: translateY(-5px);
-    }
-
-    .menu-item img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .menu-content {
-      padding: 15px;
-    }
-
-    .menu-content h3 {
-      font-size: 1.2rem;
-      margin-bottom: 8px;
-      color: var(--primary);
-    }
-
-    .menu-content p {
-      font-size: 1rem;
-      margin-bottom: 10px;
-    }
-
-    .menu-content button {
-      background-color: var(--accent);
-      border: none;
-      padding: 8px 12px;
-      color: white;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .menu-content button:hover {
-      background-color: #b88c66;
-    }
-
-    footer {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 0.9rem;
-      color: #888;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>☕ Welcome to Smart Café - Table {{ table_id }}</h1>
-  </header>
-
-  <div class="container">
-    <div class="menu-grid">
-      <div class="menu-item">
-        <img src="https://www.cubesnjuliennes.com/wp-content/uploads/2018/01/Paneer-Butter-Masala-Recipe-1.jpg" alt="Paneer Butter Masala" />
-        <div class="menu-content">
-          <h3>Paneer Butter Masala</h3>
-          <p>Rs. 250</p>
-          <button>Add to Cart</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Café Menu</title>
+    <style>
+      /* Reset some default styles */
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f0;
+        color: #333;
+      }
+      header {
+        background-color: #6b4f4f;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        border-bottom: 3px solid #d9b382;
+        color: white;
+      }
+      header img {
+        height: 50px;
+        margin-right: 15px;
+      }
+      header h1 {
+        font-style: italic;
+        font-weight: 700;
+        font-size: 1.8rem;
+        margin: 0;
+        user-select: none;
+      }
+      header h1 .coffee-emoji {
+        font-size: 1.4rem;
+      }
+      main {
+        display: flex;
+        padding: 15px 20px;
+        gap: 20px;
+      }
+      .sidebar {
+        width: 250px;
+        background: #d9b382;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px #ccc;
+      }
+      .sidebar h2 {
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #4a2c2c;
+      }
+      .search-container input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+      .category-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin: 20px 0;
+      }
+      .category-buttons button {
+        padding: 12px 0;
+        border-radius: 6px;
+        border: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        background-color: #b18b6a;
+        color: white;
+      }
+      .category-buttons button.active {
+        background-color: #6b4f4f;
+        box-shadow: 0 0 10px #6b4f4f;
+      }
+      .cart {
+        background-color: #f0e5cf;
+        border: 2px solid #d9b382;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #4a2c2c;
+      }
+      .content {
+        flex-grow: 1;
+      }
+      .content h2 {
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #6b4f4f;
+      }
+      .menu-item {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+      .menu-item img {
+        width: 120px;
+        height: 90px;
+        object-fit: cover;
+        border-radius: 6px;
+        box-shadow: 2px 2px 6px #aaa;
+      }
+      .menu-item-details {
+        flex-grow: 1;
+      }
+      .menu-item b {
+        display: block;
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+        color: #4a2c2c;
+      }
+      .price {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #7a5a3c;
+      }
+      .menu-item button {
+        background-color: #6b4f4f;
+        border: none;
+        color: white;
+        padding: 8px 14px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: background-color 0.25s;
+      }
+      .menu-item button:hover {
+        background-color: #4a2c2c;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="/static/bic-logo.png" alt="BIC Cafe Logo" />
+      <h1>
+        WELCOME TO OUR <i>SMART CAFÉ</i> <span class="coffee-emoji">☕</span>
+      </h1>
+    </header>
+    <main>
+      <aside class="sidebar">
+        <h2>Categories</h2>
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search menu..." />
         </div>
-      </div>
-
-      <div class="menu-item">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd0bfZTxu8ShUAFvCPklp6XpTKHEHC5mjWmw&usqp=CAU" alt="Veg Biryani" />
-        <div class="menu-content">
-          <h3>Veg Biryani</h3>
-          <p>Rs. 180</p>
-          <button>Add to Cart</button>
+        <div class="category-buttons" id="categoryButtons">
+          <button class="active" data-category="veg">Veg Items</button>
+          <button data-category="nonveg">Non-Veg Items</button>
+          <button data-category="drinks">Drinks</button>
+          <button data-category="dessert">Dessert</button>
         </div>
-      </div>
-
-      <div class="menu-item">
-        <img src="https://img.freepik.com/free-photo/palak-paneer-indian-curry-with-spinach-vegetable-plate_2829-10745.jpg" alt="Palak Paneer" />
-        <div class="menu-content">
-          <h3>Palak Paneer</h3>
-          <p>Rs. 200</p>
-          <button>Add to Cart</button>
+        <div class="cart">
+          <p><b>Your Cart</b></p>
+          <p>Total items: <span id="cartCount">0</span></p>
         </div>
-      </div>
-    </div>
-  </div>
+      </aside>
+      <section class="content">
+        <h2>Menu</h2>
+        <div id="menuItems">
+          <!-- Sample items -->
+          <div
+            class="menu-item"
+            data-category="veg"
+            data-name="Paneer Butter Masala"
+          >
+            <img
+              src="https://www.cubesnjuliennes.com/wp-content/uploads/2018/01/Paneer-Butter-Masala-Recipe-1.jpg"
+              alt="Paneer Butter Masala"
+            />
+            <div class="menu-item-details">
+              <b>Paneer Butter Masala</b>
+              <p class="price">Rs. 250</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+          <div class="menu-item" data-category="veg" data-name="Veg Biryani">
+            <img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd0bfZTxu8ShUAFvCPklp6XpTKHEHC5mjWmw&usqp=CAU"
+              alt="Veg Biryani"
+            />
+            <div class="menu-item-details">
+              <b>Veg Biryani</b>
+              <p class="price">Rs. 180</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+          <div class="menu-item" data-category="veg" data-name="Palak Paneer">
+            <img
+              src="https://img.freepik.com/free-photo/palak-paneer-indian-curry-with-spinach-vegetable-plate_2829-10745.jpg"
+              alt="Palak Paneer"
+            />
+            <div class="menu-item-details">
+              <b>Palak Paneer</b>
+              <p class="price">Rs. 200</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+          <div
+            class="menu-item"
+            data-category="nonveg"
+            data-name="Chicken Curry"
+          >
+            <img
+              src="https://www.indianhealthyrecipes.com/wp-content/uploads/2020/05/chicken-curry-recipe.jpg"
+              alt="Chicken Curry"
+            />
+            <div class="menu-item-details">
+              <b>Chicken Curry</b>
+              <p class="price">Rs. 300</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+          <div class="menu-item" data-category="drinks" data-name="Masala Chai">
+            <img
+              src="https://cdn.pixabay.com/photo/2017/11/17/13/02/tea-2952920_1280.jpg"
+              alt="Masala Chai"
+            />
+            <div class="menu-item-details">
+              <b>Masala Chai</b>
+              <p class="price">Rs. 80</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+          <div
+            class="menu-item"
+            data-category="dessert"
+            data-name="Gulab Jamun"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/4/40/Gulab_jamun_and_ice_cream.jpg"
+              alt="Gulab Jamun"
+            />
+            <div class="menu-item-details">
+              <b>Gulab Jamun</b>
+              <p class="price">Rs. 120</p>
+            </div>
+            <button>Add to Cart</button>
+          </div>
+        </div>
+      </section>
+    </main>
 
-  <footer>
-    &copy; 2025 Smart Café | Built with ❤️
-  </footer>
-</body>
+    <script src="/static/script.js"></script>
+  </body>
 </html>
