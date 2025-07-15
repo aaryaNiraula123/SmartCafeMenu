@@ -11,142 +11,386 @@
       }
       body {
         margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #f2f2f0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         color: #333;
+        line-height: 1.6;
       }
+      
       header {
-        background-color: #6b4f4f;
-        padding: 15px 20px;
+        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
+        padding: 20px;
         display: flex;
         align-items: center;
         border-bottom: 3px solid #d9b382;
         color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       }
+      
       header img {
-        height: 50px;
-        margin-right: 15px;
+        height: 60px;
+        margin-right: 20px;
+        border-radius: 50%;
+        border: 3px solid #d9b382;
       }
+      
       header h1 {
         font-style: italic;
         font-weight: 700;
-        font-size: 1.8rem;
+        font-size: 2rem;
         margin: 0;
         user-select: none;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
       }
+      
       header h1 .coffee-emoji {
-        font-size: 1.4rem;
+        font-size: 1.8rem;
+        animation: bounce 2s infinite;
       }
+      
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+      }
+      
       main {
         display: flex;
-        padding: 15px 20px;
-        gap: 20px;
+        padding: 20px;
+        gap: 30px;
+        max-width: 1400px;
+        margin: 0 auto;
       }
+      
       .sidebar {
-        width: 250px;
-        background: #d9b382;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 2px 2px 10px #ccc;
+        width: 300px;
+        background: linear-gradient(135deg, #d9b382 0%, #e6c79a 100%);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
       }
+      
       .sidebar h2 {
         font-weight: 700;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
         color: #4a2c2c;
+        text-align: center;
+        font-size: 1.4rem;
       }
+      
+      .search-container {
+        position: relative;
+        margin-bottom: 25px;
+      }
+      
       .search-container input[type="text"] {
         width: 100%;
-        padding: 8px 10px;
-        border: none;
-        border-radius: 5px;
+        padding: 12px 15px;
+        border: 2px solid #b18b6a;
+        border-radius: 25px;
         font-size: 1rem;
+        transition: all 0.3s;
+        background: white;
       }
+      
+      .search-container input[type="text"]:focus {
+        outline: none;
+        border-color: #6b4f4f;
+        box-shadow: 0 0 10px rgba(107, 79, 79, 0.3);
+      }
+      
       .category-buttons {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        margin: 20px 0;
+        gap: 12px;
+        margin: 25px 0;
       }
+      
       .category-buttons button {
-        padding: 12px 0;
-        border-radius: 6px;
+        padding: 15px 20px;
+        border-radius: 25px;
         border: none;
         font-weight: 700;
         font-size: 1.1rem;
         cursor: pointer;
-        transition: background-color 0.3s;
-        background-color: #b18b6a;
+        transition: all 0.3s;
+        background: linear-gradient(135deg, #b18b6a 0%, #c59d7a 100%);
         color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
       }
+      
+      .category-buttons button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+      }
+      
+      .category-buttons button:hover::before {
+        left: 100%;
+      }
+      
+      .category-buttons button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      
       .category-buttons button.active {
-        background-color: #6b4f4f;
-        box-shadow: 0 0 10px #6b4f4f;
+        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
+        box-shadow: 0 0 20px rgba(107, 79, 79, 0.5);
+        transform: scale(1.05);
       }
+      
       .cart {
-        background-color: #f0e5cf;
-        border: 2px solid #d9b382;
-        padding: 15px;
-        border-radius: 8px;
+        background: linear-gradient(135deg, #f0e5cf 0%, #f7ead9 100%);
+        border: 3px solid #d9b382;
+        padding: 20px;
+        border-radius: 15px;
         font-weight: 700;
-        font-size: 1.1rem;
         color: #4a2c2c;
+        text-align: center;
+        box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
       }
+      
+      .cart h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.2rem;
+      }
+      
+      .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 10px 0;
+        padding: 8px;
+        background: rgba(255,255,255,0.5);
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      
+      .cart-item button {
+        background: #d9534f;
+        border: none;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s;
+      }
+      
+      .cart-item button:hover {
+        background: #c9302c;
+        transform: scale(1.1);
+      }
+      
+      .cart-total {
+        border-top: 2px solid #d9b382;
+        padding-top: 15px;
+        margin-top: 15px;
+        font-size: 1.1rem;
+      }
+      
       .content {
         flex-grow: 1;
+        min-width: 0;
       }
+      
       .content h2 {
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
         color: #6b4f4f;
+        font-size: 2rem;
+        text-align: center;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
       }
+      
       .menu-item {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #ddd;
+        margin-bottom: 30px;
+        padding: 20px;
+        border-radius: 15px;
         display: flex;
-        gap: 15px;
+        gap: 20px;
         align-items: center;
+        background: white;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        transition: all 0.3s;
+        border: 1px solid #e0e0e0;
       }
+      
+      .menu-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+      }
+      
       .menu-item img {
-        width: 120px;
-        height: 90px;
+        width: 150px;
+        height: 120px;
         object-fit: cover;
-        border-radius: 6px;
-        box-shadow: 2px 2px 6px #aaa;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: transform 0.3s;
       }
+      
+      .menu-item:hover img {
+        transform: scale(1.05);
+      }
+      
       .menu-item-details {
         flex-grow: 1;
       }
+      
       .menu-item b {
         display: block;
         font-weight: 700;
-        font-size: 1.1rem;
-        margin-bottom: 5px;
+        font-size: 1.3rem;
+        margin-bottom: 8px;
         color: #4a2c2c;
       }
-      .price {
-        font-weight: 600;
-        font-size: 1rem;
-        color: #7a5a3c;
+      
+      .menu-item-description {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+        line-height: 1.5;
       }
+      
+      .price {
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #d9534f;
+        margin-bottom: 10px;
+      }
+      
       .menu-item button {
-        background-color: #6b4f4f;
+        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
         border: none;
         color: white;
-        padding: 8px 14px;
-        font-size: 0.9rem;
+        padding: 12px 25px;
+        font-size: 1rem;
+        font-weight: 600;
         cursor: pointer;
-        border-radius: 6px;
-        transition: background-color 0.25s;
+        border-radius: 25px;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        min-width: 120px;
       }
+      
       .menu-item button:hover {
-        background-color: #4a2c2c;
+        background: linear-gradient(135deg, #4a2c2c 0%, #6b4f4f 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      }
+      
+      .menu-item button:disabled {
+        background: #5cb85c;
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      .menu-item button:disabled:hover {
+        background: #5cb85c;
+        transform: none;
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        main {
+          flex-direction: column;
+          padding: 15px;
+        }
+        
+        .sidebar {
+          width: 100%;
+          position: static;
+          margin-bottom: 20px;
+        }
+        
+        .category-buttons {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        
+        .category-buttons button {
+          flex: 1;
+          min-width: 120px;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          text-align: center;
+          padding: 15px;
+        }
+        
+        header img {
+          margin: 0 0 10px 0;
+        }
+        
+        header h1 {
+          font-size: 1.5rem;
+        }
+        
+        .menu-item {
+          flex-direction: column;
+          text-align: center;
+        }
+        
+        .menu-item img {
+          width: 100%;
+          max-width: 300px;
+          height: 200px;
+        }
+        
+        .sidebar {
+          padding: 15px;
+        }
+        
+        .content h2 {
+          font-size: 1.5rem;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .category-buttons {
+          flex-direction: column;
+        }
+        
+        .category-buttons button {
+          font-size: 0.9rem;
+          padding: 12px 15px;
+        }
+        
+        .menu-item {
+          padding: 15px;
+        }
+        
+        .menu-item b {
+          font-size: 1.1rem;
+        }
+        
+        .sidebar {
+          padding: 10px;
+        }
       }
     </style>
   </head>
   <body>
     <header>
-      <img src="/static/bic-logo.png" alt="BIC Cafe Logo" />
+      <img src="https://via.placeholder.com/60x60/8b6f6f/ffffff?text=BC" alt="BIC Cafe Logo" />
       <h1>
         WELCOME TO OUR <i>BIC CAFÉ</i> <span class="coffee-emoji">☕</span>
       </h1>
@@ -158,102 +402,288 @@
           <input type="text" id="searchInput" placeholder="Search menu..." />
         </div>
         <div class="category-buttons" id="categoryButtons">
-          <button class="active" data-category="veg">Veg Items</button>
+          <button class="active" data-category="all">All Items</button>
+          <button data-category="veg">Veg Items</button>
           <button data-category="nonveg">Non-Veg Items</button>
           <button data-category="drinks">Drinks</button>
-          <button data-category="dessert">Dessert</button>
+          <button data-category="dessert">Desserts</button>
         </div>
         <div class="cart">
-          <p><b>Your Cart</b></p>
-          <p>Total items: <span id="cartCount">0</span></p>
+          <h3>Your Cart</h3>
+          <div id="cartItems"></div>
+          <div class="cart-total">
+            <p>Total items: <span id="cartCount">0</span></p>
+            <p>Total: <span id="cartTotal">Rs. 0</span></p>
+          </div>
         </div>
       </aside>
       <section class="content">
         <h2>Menu</h2>
         <div id="menuItems">
-          <!-- Sample items -->
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Paneer Butter Masala"
-          >
-            <img
-              src="https://www.cubesnjuliennes.com/wp-content/uploads/2018/01/Paneer-Butter-Masala-Recipe-1.jpg"
-              alt="Paneer Butter Masala"
-            />
+          <!-- Veg Items -->
+          <div class="menu-item" data-category="veg" data-name="Paneer Butter Masala" data-price="250">
+            <img src="https://www.cubesnjuliennes.com/wp-content/uploads/2018/01/Paneer-Butter-Masala-Recipe-1.jpg" alt="Paneer Butter Masala" />
             <div class="menu-item-details">
               <b>Paneer Butter Masala</b>
+              <p class="menu-item-description">Rich and creamy paneer curry with aromatic spices and butter</p>
               <p class="price">Rs. 250</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Paneer Butter Masala', 250, this)">Add to Cart</button>
           </div>
-          <div class="menu-item" data-category="veg" data-name="Veg Biryani">
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd0bfZTxu8ShUAFvCPklp6XpTKHEHC5mjWmw&usqp=CAU"
-              alt="Veg Biryani"
-            />
+          
+          <div class="menu-item" data-category="veg" data-name="Veg Biryani" data-price="180">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSd0bfZTxu8ShUAFvCPklp6XpTKHEHC5mjWmw&usqp=CAU" alt="Veg Biryani" />
             <div class="menu-item-details">
               <b>Veg Biryani</b>
+              <p class="menu-item-description">Fragrant basmati rice cooked with mixed vegetables and aromatic spices</p>
               <p class="price">Rs. 180</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Veg Biryani', 180, this)">Add to Cart</button>
           </div>
-          <div class="menu-item" data-category="veg" data-name="Palak Paneer">
-            <img
-              src="https://img.freepik.com/free-photo/palak-paneer-indian-curry-with-spinach-vegetable-plate_2829-10745.jpg"
-              alt="Palak Paneer"
-            />
+          
+          <div class="menu-item" data-category="veg" data-name="Palak Paneer" data-price="200">
+            <img src="https://img.freepik.com/free-photo/palak-paneer-indian-curry-with-spinach-vegetable-plate_2829-10745.jpg" alt="Palak Paneer" />
             <div class="menu-item-details">
               <b>Palak Paneer</b>
+              <p class="menu-item-description">Fresh spinach curry with soft paneer cubes in a creamy gravy</p>
               <p class="price">Rs. 200</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Palak Paneer', 200, this)">Add to Cart</button>
           </div>
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Chicken Curry"
-          >
-            <img
-              src="https://www.indianhealthyrecipes.com/wp-content/uploads/2020/05/chicken-curry-recipe.jpg"
-              alt="Chicken Curry"
-            />
+          
+          <div class="menu-item" data-category="veg" data-name="Dal Makhani" data-price="160">
+            <img src="https://www.cookwithmanali.com/wp-content/uploads/2019/04/Restaurant-Style-Dal-Makhani.jpg" alt="Dal Makhani" />
+            <div class="menu-item-details">
+              <b>Dal Makhani</b>
+              <p class="menu-item-description">Creamy black lentils slow-cooked with butter and aromatic spices</p>
+              <p class="price">Rs. 160</p>
+            </div>
+            <button onclick="addToCart('Dal Makhani', 160, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="veg" data-name="Aloo Gobi" data-price="140">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2020/04/aloo-gobi-recipe.jpg" alt="Aloo Gobi" />
+            <div class="menu-item-details">
+              <b>Aloo Gobi</b>
+              <p class="menu-item-description">Classic dry curry with potatoes and cauliflower cooked with traditional spices</p>
+              <p class="price">Rs. 140</p>
+            </div>
+            <button onclick="addToCart('Aloo Gobi', 140, this)">Add to Cart</button>
+          </div>
+          
+          <!-- Non-Veg Items -->
+          <div class="menu-item" data-category="nonveg" data-name="Chicken Curry" data-price="300">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2020/05/chicken-curry-recipe.jpg" alt="Chicken Curry" />
             <div class="menu-item-details">
               <b>Chicken Curry</b>
+              <p class="menu-item-description">Tender chicken pieces cooked in a rich, spicy tomato-based gravy</p>
               <p class="price">Rs. 300</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Chicken Curry', 300, this)">Add to Cart</button>
           </div>
-          <div class="menu-item" data-category="drinks" data-name="Masala Chai">
-            <img
-              src="https://cdn.pixabay.com/photo/2017/11/17/13/02/tea-2952920_1280.jpg"
-              alt="Masala Chai"
-            />
+          
+          <div class="menu-item" data-category="nonveg" data-name="Butter Chicken" data-price="320">
+            <img src="https://cafedelites.com/wp-content/uploads/2019/01/Butter-Chicken-IMAGE-27.jpg" alt="Butter Chicken" />
+            <div class="menu-item-details">
+              <b>Butter Chicken</b>
+              <p class="menu-item-description">Creamy tomato-based curry with tender chicken pieces in a rich sauce</p>
+              <p class="price">Rs. 320</p>
+            </div>
+            <button onclick="addToCart('Butter Chicken', 320, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="nonveg" data-name="Chicken Biryani" data-price="280">
+            <img src="https://www.licious.in/blog/wp-content/uploads/2020/12/Hyderabadi-chicken-biryani.jpg" alt="Chicken Biryani" />
+            <div class="menu-item-details">
+              <b>Chicken Biryani</b>
+              <p class="menu-item-description">Aromatic basmati rice layered with marinated chicken and cooked to perfection</p>
+              <p class="price">Rs. 280</p>
+            </div>
+            <button onclick="addToCart('Chicken Biryani', 280, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="nonveg" data-name="Fish Curry" data-price="350">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2019/06/fish-curry-recipe.jpg" alt="Fish Curry" />
+            <div class="menu-item-details">
+              <b>Fish Curry</b>
+              <p class="menu-item-description">Fresh fish cooked in coconut milk with traditional coastal spices</p>
+              <p class="price">Rs. 350</p>
+            </div>
+            <button onclick="addToCart('Fish Curry', 350, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="nonveg" data-name="Mutton Rogan Josh" data-price="420">
+            <img src="https://www.recipetineats.com/wp-content/uploads/2019/06/Rogan-Josh_2.jpg" alt="Mutton Rogan Josh" />
+            <div class="menu-item-details">
+              <b>Mutton Rogan Josh</b>
+              <p class="menu-item-description">Tender mutton pieces slow-cooked in aromatic Kashmiri spices</p>
+              <p class="price">Rs. 420</p>
+            </div>
+            <button onclick="addToCart('Mutton Rogan Josh', 420, this)">Add to Cart</button>
+          </div>
+          
+          <!-- Drinks -->
+          <div class="menu-item" data-category="drinks" data-name="Masala Chai" data-price="80">
+            <img src="https://cdn.pixabay.com/photo/2017/11/17/13/02/tea-2952920_1280.jpg" alt="Masala Chai" />
             <div class="menu-item-details">
               <b>Masala Chai</b>
+              <p class="menu-item-description">Traditional Indian tea brewed with aromatic spices and milk</p>
               <p class="price">Rs. 80</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Masala Chai', 80, this)">Add to Cart</button>
           </div>
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Gulab Jamun"
-          >
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/4/40/Gulab_jamun_and_ice_cream.jpg"
-              alt="Gulab Jamun"
-            />
+          
+          <div class="menu-item" data-category="drinks" data-name="Coffee" data-price="90">
+            <img src="https://cdn.pixabay.com/photo/2016/11/29/13/14/coffee-1868647_1280.jpg" alt="Coffee" />
             <div class="menu-item-details">
-              <b>Gulab Jamun</b>
+              <b>Coffee</b>
+              <p class="menu-item-description">Rich and aromatic freshly brewed coffee to energize your day</p>
+              <p class="price">Rs. 90</p>
+            </div>
+            <button onclick="addToCart('Coffee', 90, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="drinks" data-name="Lassi" data-price="120">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/04/lassi-recipe.jpg" alt="Lassi" />
+            <div class="menu-item-details">
+              <b>Lassi</b>
+              <p class="menu-item-description">Cool and refreshing yogurt-based drink, available in sweet and salty varieties</p>
               <p class="price">Rs. 120</p>
             </div>
-            <button>Add to Cart</button>
+            <button onclick="addToCart('Lassi', 120, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="drinks" data-name="Fresh Lime Soda" data-price="100">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/05/nimbu-paani.jpg" alt="Fresh Lime Soda" />
+            <div class="menu-item-details">
+              <b>Fresh Lime Soda</b>
+              <p class="menu-item-description">Refreshing lime juice with soda water and a hint of mint</p>
+              <p class="price">Rs. 100</p>
+            </div>
+            <button onclick="addToCart('Fresh Lime Soda', 100, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="drinks" data-name="Mango Shake" data-price="150">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/04/mango-milkshake.jpg" alt="Mango Shake" />
+            <div class="menu-item-details">
+              <b>Mango Shake</b>
+              <p class="menu-item-description">Creamy mango milkshake made with fresh mangoes and milk</p>
+              <p class="price">Rs. 150</p>
+            </div>
+            <button onclick="addToCart('Mango Shake', 150, this)">Add to Cart</button>
+          </div>
+          
+          <!-- Desserts -->
+          <div class="menu-item" data-category="dessert" data-name="Gulab Jamun" data-price="120">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Gulab_jamun_and_ice_cream.jpg" alt="Gulab Jamun" />
+            <div class="menu-item-details">
+              <b>Gulab Jamun</b>
+              <p class="menu-item-description">Soft milk dumplings soaked in rose-flavored sugar syrup</p>
+              <p class="price">Rs. 120</p>
+            </div>
+            <button onclick="addToCart('Gulab Jamun', 120, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="dessert" data-name="Rasgulla" data-price="100">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/08/rasgulla-recipe.jpg" alt="Rasgulla" />
+            <div class="menu-item-details">
+              <b>Rasgulla</b>
+              <p class="menu-item-description">Spongy cottage cheese balls soaked in sugar syrup</p>
+              <p class="price">Rs. 100</p>
+            </div>
+            <button onclick="addToCart('Rasgulla', 100, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="dessert" data-name="Kulfi" data-price="80">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/06/kulfi-recipe.jpg" alt="Kulfi" />
+            <div class="menu-item-details">
+              <b>Kulfi</b>
+              <p class="menu-item-description">Traditional Indian ice cream with rich, creamy texture and cardamom flavor</p>
+              <p class="price">Rs. 80</p>
+            </div>
+            <button onclick="addToCart('Kulfi', 80, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="dessert" data-name="Kheer" data-price="90">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2020/04/rice-kheer-recipe.jpg" alt="Kheer" />
+            <div class="menu-item-details">
+              <b>Kheer</b>
+              <p class="menu-item-description">Creamy rice pudding cooked in milk with cardamom and nuts</p>
+              <p class="price">Rs. 90</p>
+            </div>
+            <button onclick="addToCart('Kheer', 90, this)">Add to Cart</button>
+          </div>
+          
+          <div class="menu-item" data-category="dessert" data-name="Jalebi" data-price="110">
+            <img src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/10/jalebi-recipe.jpg" alt="Jalebi" />
+            <div class="menu-item-details">
+              <b>Jalebi</b>
+              <p class="menu-item-description">Crispy spiral-shaped sweets soaked in sugar syrup</p>
+              <p class="price">Rs. 110</p>
+            </div>
+            <button onclick="addToCart('Jalebi', 110, this)">Add to Cart</button>
           </div>
         </div>
       </section>
     </main>
 
-    <script src="/static/script.js"></script>
-  </body>
-</html>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const categoryButtons = document.getElementById("categoryButtons");
+        const menuItems = document.querySelectorAll("#menuItems .menu-item");
+        const cartCount = document.getElementById("cartCount");
+        const cartTotal = document.getElementById("cartTotal");
+        const cartItems = document.getElementById("cartItems");
+
+        let activeCategory = "all";
+        let cart = {};
+
+        // Filter menu items by category and search text
+        function filterMenu() {
+          const searchText = searchInput.value.toLowerCase();
+
+          menuItems.forEach((item) => {
+            const name = item.dataset.name.toLowerCase();
+            const category = item.dataset.category;
+
+            const matchesCategory = activeCategory === "all" || category === activeCategory;
+            const matchesSearch = name.includes(searchText);
+
+            if (matchesCategory && matchesSearch) {
+              item.style.display = "flex";
+            } else {
+              item.style.display = "none";
+            }
+          });
+        }
+
+        // Handle category button clicks
+        categoryButtons.addEventListener("click", (e) => {
+          if (e.target.tagName !== "BUTTON") return;
+
+          activeCategory = e.target.dataset.category;
+
+          // Update active button styling
+          categoryButtons.querySelectorAll("button").forEach((btn) => {
+            btn.classList.toggle("active", btn === e.target);
+          });
+
+          filterMenu();
+        });
+
+        // Handle search input
+        searchInput.addEventListener("input", filterMenu);
+
+        // Update cart display
+        function updateCartDisplay() {
+          const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+          const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          
+          cartCount.textContent = totalItems;
+          cartTotal.textContent = `Rs. ${totalPrice}`;
+          
+          // Update cart items display
+          cartItems.innerHTML = "";
+          Object.entries(cart).forEach(([name, item]) => {
+            const cartItem = document.createElement("div");
