@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Orders</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='order.css') }}"
+    />
+  </head>
+  <body>
+    <h1>All Orders</h1>
+
+    {% if orders %} {% for order in orders %}
+    <div class="order">
+      <h3>User: {{ order.user_name }}</h3>
+      <ul>
+        {% for item in order["items"] %}
+        <li>
+          {{ item.name }} x{{ item.quantity }} - Rs. {{ item.price *
+          item.quantity }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %} {% else %}
+    <p>No orders found.</p>
+    {% endif %}
+  </body>
+</html>

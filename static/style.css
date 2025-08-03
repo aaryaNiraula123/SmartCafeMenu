@@ -31,8 +31,9 @@ body {
 }
 
 .logo {
-  height: 125px;
-  margin-right: 40px;
+  max-height: 100%;
+  height: auto;
+  margin-right: 20px;
 }
 
 /* SIDEBAR */

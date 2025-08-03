@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      .checkout-container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      li {
+        margin: 5px 0;
+      }
+      .input-group {
+        margin-top: 20px;
+      }
+      input[type="text"] {
+        padding: 8px;
+        width: 100%;
+        margin-top: 5px;
+      }
+      button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="checkout-container">
+      <h1>Order Summary</h1>
+      <ul id="order-list"></ul>
+      <p id="total-price">Total: Rs. 0</p>
+
+      <div class="input-group">
+        <label for="customerName">Your Name:</label>
+        <input
+          type="text"
+          id="customerName"
+          placeholder="Enter your name"
+          required
+        />
+      </div>
+
+      <button onclick="confirmCheckout()">Confirm Order</button>
+    </div>
+
+    <script>
+      function loadCart() {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const orderList = document.getElementById("order-list");
+        const totalPrice = document.getElementById("total-price");
+
+        let total = 0;
+        orderList.innerHTML = "";
+        cart.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = `${item.name} x${item.quantity} = Rs. ${
+            item.price * item.quantity
+          }`;
+          orderList.appendChild(li);
+          total += item.price * item.quantity;
+        });
+
+        totalPrice.textContent = `Total: Rs. ${total}`;
+      }
+
+      async function confirmCheckout() {
+        const name = document.getElementById("customerName").value.trim();
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+        if (!name) {
+          alert("Please enter your name.");
+          return;
+        }
+
+        let total = 0;
+        cart.forEach((item) => {
+          total += item.price * item.quantity;
+        });
+
+        const response = await fetch("/submit-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, cart, total }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          alert(`Thank you for your order, ${name}!`);
+          localStorage.removeItem("cart");
+          window.location.href = "/menu/1";
+        } else {
+          alert("Error submitting order: " + result.message);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", loadCart);
+    </script>
+  </body>
+</html>

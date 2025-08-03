@@ -1,200 +1,161 @@
-function highlightTab(tabId, colorClass) {
-  const allTabs = ["veg-tab", "nonveg-tab", "drinks-tab", "desert-tab"];
-
-  allTabs.forEach((id) => {
-    const el = document.getElementById(id);
-    el.classList.remove("active-tab", "green", "red", "blue", "purple");
-  });
-
-  const activeTab = document.getElementById(tabId);
-  activeTab.classList.add("active-tab", colorClass);
-}
-
-function showVegItems() {
-  hideAllTabs();
-  document.getElementById("vegcontents").classList.add("active");
-  highlightTab("veg-tab", "red");
-}
-
-function showNonVegItems() {
-  hideAllTabs();
-  document.getElementById("nonvegcontents").classList.add("active");
-  highlightTab("nonveg-tab", "green");
-}
-
-function showdrinks() {
-  hideAllTabs();
-  document.getElementById("drinkcontents").classList.add("active");
-  highlightTab("drinks-tab", "blue");
-}
-
-function showdesert() {
-  hideAllTabs();
-  document.getElementById("desertcontents").classList.add("active");
-  highlightTab("desert-tab", "purple");
-}
-
-// Helper to hide all tabs before showing one
-function hideAllTabs() {
-  document.getElementById("vegcontents").classList.remove("active");
-  document.getElementById("nonvegcontents").classList.remove("active");
-  document.getElementById("drinkcontents").classList.remove("active");
-  document.getElementById("desertcontents").classList.remove("active");
-}
-
-// Show veg by default on load
-window.onload = function () {
-  showVegItems();
-};
-function searchMenu() {
-  const query = document.getElementById("searchInput").value.toLowerCase();
-  const allSections = document.querySelectorAll(".tab-content");
-
-  // Loop through all menu sections
-  allSections.forEach((section) => {
-    const cards = section.querySelectorAll(".menu-card");
-
-    cards.forEach((card) => {
-      const title = card.querySelector("h4").textContent.toLowerCase();
-
-      // Match text with search
-      if (title.includes(query)) {
-        card.style.display = "block";
-        card.classList.add("highlight");
-      } else {
-        card.style.display = "none";
-        card.classList.remove("highlight");
-      }
-    });
-  });
-
-  // Removes highlight after 5 seconds
-  setTimeout(() => {
-    document.querySelectorAll(".menu-card.highlight").forEach((card) => {
-      card.classList.remove("highlight");
-    });
-  }, 5000);
-}
-
-function addToCart(itemName, price) {
-  alert(`${itemName} (Rs. ${price}) added to cart!`);
-}
-function filterMenu() {
-  const filterValue = document.getElementById("filter").value;
-  const activeSection = document.querySelector(".tab-content.active");
-
-  if (!activeSection) return;
-
-  const menuCards = Array.from(activeSection.querySelectorAll(".menu-card"));
-  const menuGrid = activeSection.querySelector(".menu-grid");
-
-  menuCards.sort((a, b) => {
-    const priceA = parseInt(
-      a.querySelector("p").textContent.replace("Rs. ", "")
-    );
-    const priceB = parseInt(
-      b.querySelector("p").textContent.replace("Rs. ", "")
-    );
-
-    switch (filterValue) {
-      case "price-asc":
-        return priceA - priceB; // Low to High
-      case "price-desc":
-        return priceB - priceA; // High to Low
-      case "default":
-      default:
-        return 0;
-    }
-  });
-
-  menuGrid.innerHTML = "";
-  menuCards.forEach((card) => {
-    menuGrid.appendChild(card);
-  });
-}
-
 let cart = [];
 
-function addToCart(name, price) {
-  const existingItem = cart.find((item) => item.name === name);
+document.addEventListener("DOMContentLoaded", () => {
+  // Load saved cart from localStorage
+  const storedCart = localStorage.getItem("cart");
+  if (storedCart) {
+    cart = JSON.parse(storedCart);
+    updateCart();
+  }
+  showVegItems(); // default tab
+});
 
+function addToCart(itemName, itemPrice) {
+  const existingItem = cart.find((item) => item.name === itemName);
   if (existingItem) {
     existingItem.quantity++;
   } else {
-    cart.push({ name, price, quantity: 1 });
+    cart.push({ name: itemName, price: itemPrice, quantity: 1 });
   }
-
-  renderCart();
+  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCart();
 }
 
-function renderCart() {
-  const cartList = document.getElementById("cart-items");
-  cartList.innerHTML = "";
+function updateCart() {
+  const cartItemsElement = document.getElementById("cart-items");
+  const cartTotalElement = document.getElementById("cart-total");
+  cartItemsElement.innerHTML = "";
+  let total = 0;
 
   cart.forEach((item) => {
     const li = document.createElement("li");
-
-    li.innerHTML = `
-      <strong>${item.name}</strong> - Rs. ${item.price} x ${item.quantity}
-      <button onclick="updateQuantity('${item.name}', -1)">-</button>
-      <button onclick="updateQuantity('${item.name}', 1)">+</button>
-      <button onclick="removeItem('${item.name}')">Remove</button>
-    `;
-
-    cartList.appendChild(li);
+    li.textContent = `${item.name} x${item.quantity} - Rs. ${
+      item.price * item.quantity
+    }`;
+    cartItemsElement.appendChild(li);
+    total += item.price * item.quantity;
   });
 
-  updateTotal();
-}
-
-function updateQuantity(name, delta) {
-  const item = cart.find((i) => i.name === name);
-  if (!item) return;
-
-  item.quantity += delta;
-
-  if (item.quantity <= 0) {
-    cart = cart.filter((i) => i.name !== name);
-  }
-
-  renderCart();
-}
-
-function removeItem(name) {
-  cart = cart.filter((item) => item.name !== name);
-  renderCart();
-}
-
-function updateTotal() {
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  document.getElementById("cart-total").textContent = `Total: Rs. ${total}`;
+  cartTotalElement.textContent = `Total: Rs. ${total}`;
 }
 
 function resetCart() {
   cart = [];
-  renderCart();
+  localStorage.removeItem("cart");
+  updateCart();
+  alert("Cart has been reset!");
 }
 
-//  final
 function finalOrder() {
   if (cart.length === 0) {
     alert("Your cart is empty!");
     return;
   }
-  const summaryList = document.getElementById("order-summary-list");
-  const summaryTotal = document.getElementById("order-summary-total");
-  summaryList.innerHTML = "";
-  let total = 0;
-  cart.forEach((item) => {
-    const li = document.createElement("li");
-    li.textContent = `${item.name} - Rs. ${item.price} x ${item.quantity}`;
-    summaryList.appendChild(li);
-    total += item.price * item.quantity;
-  });
-  summaryTotal.textContent = `Total: Rs. ${total}`;
-  document.getElementById("order-modal").style.display = "flex";
+
+  const userName = prompt("Please enter your name for the order:");
+  if (!userName || userName.trim() === "") {
+    alert("Name is required to place order!");
+    return;
+  }
+
+  // Prepare data
+  const orderData = {
+    user_name: userName.trim(),
+    items: cart,
+  };
+
+  fetch("/checkout", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      alert(data.message || "Thank you for your order!");
+      // Clear cart after successful order
+      cart = [];
+      localStorage.removeItem("cart");
+      updateCart();
+
+      // Redirect or reload menu page
+      window.location.href = "/menu/1";
+    })
+    .catch((error) => {
+      alert("Error submitting order, please try again.");
+      console.error("Order error:", error);
+    });
 }
 
-function closeOrderModal() {
-  document.getElementById("order-modal").style.display = "none";
+// Tab display
+function showTab(tabId) {
+  const contents = document.querySelectorAll(".tab-content");
+  contents.forEach((content) => (content.style.display = "none"));
+
+  const active = document.getElementById(tabId);
+  if (active) active.style.display = "block";
+}
+
+function showVegItems() {
+  showTab("vegcontents");
+}
+function showNonVegItems() {
+  showTab("nonvegcontents");
+}
+function showdrinks() {
+  showTab("drinkcontents");
+}
+function showdesert() {
+  showTab("desertcontents");
+}
+
+// Search menu items
+function searchMenu() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const menuCards = document.querySelectorAll(".menu-card");
+
+  menuCards.forEach((card) => {
+    const itemName = card.querySelector("h4").textContent.toLowerCase();
+    card.style.display = itemName.includes(input) ? "block" : "none";
+  });
+}
+
+// Sort menu items
+function filterMenu() {
+  const value = document.getElementById("filter").value;
+  const allContents = document.querySelectorAll(".tab-content");
+
+  allContents.forEach((content) => {
+    const cards = Array.from(content.querySelectorAll(".menu-card"));
+
+    let sortedCards = cards;
+    if (value === "price-asc") {
+      sortedCards = cards.sort((a, b) => {
+        const priceA = parseInt(
+          a.querySelector("p").textContent.replace("Rs. ", "")
+        );
+        const priceB = parseInt(
+          b.querySelector("p").textContent.replace("Rs. ", "")
+        );
+        return priceA - priceB;
+      });
+    } else if (value === "price-desc") {
+      sortedCards = cards.sort((a, b) => {
+        const priceA = parseInt(
+          a.querySelector("p").textContent.replace("Rs. ", "")
+        );
+        const priceB = parseInt(
+          b.querySelector("p").textContent.replace("Rs. ", "")
+        );
+        return priceB - priceA;
+      });
+    }
+
+    const grid = content.querySelector(".menu-grid");
+    if (grid) {
+      grid.innerHTML = "";
+      sortedCards.forEach((card) => grid.appendChild(card));
+    }
+  });
 }

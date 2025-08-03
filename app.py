@@ -1,62 +1,32 @@
 import os
-import qrcode
-from flask import Flask, render_template, redirect
-from PIL import Image, ImageDraw, ImageFont
+import json
+from flask import Flask, render_template, redirect, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
 # === CONFIG ===
 BASE_URL = "https://smartcafemenu-1.onrender.com"
 
-# === QR Code Generation Function ===
-def generate_qr(table_id: str):
-    url = f"{BASE_URL}/menu/{table_id}"
-    qr_img = qrcode.make(url)
+# SQLite database config
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///orders.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
-    title_text = "BIC Café"
-    font_size = 28
+# === DB MODEL ===
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_name = db.Column(db.String(100), nullable=False)
+    items = db.Column(db.Text, nullable=False)  # store JSON string of items
 
-    try:
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except:
-        font = ImageFont.load_default()
+    def __repr__(self):
+        return f"<Order {self.id} by {self.user_name}>"
 
-    # Measure text
-    dummy_img = Image.new("RGB", (1, 1))
-    dummy_draw = ImageDraw.Draw(dummy_img)
-    bbox = dummy_draw.textbbox((0, 0), title_text, font=font)
-    text_width = bbox[2] - bbox[0]
-    text_height = bbox[3] - bbox[1]
+# Create DB tables if they don't exist
+with app.app_context():
+    db.create_all()
 
-    # New image size for QR + text
-    new_width = qr_img.size[0]
-    new_height = qr_img.size[1] + text_height + 20
-    combined = Image.new("RGB", (new_width, new_height), "white")
-    draw = ImageDraw.Draw(combined)
-
-    # Draw title text
-    draw.text(
-        ((new_width - text_width) / 2, 10),
-        title_text,
-        font=font,
-        fill="black"
-    )
-
-    combined.paste(qr_img.convert("RGB"), (0, text_height + 20))
-
-    # Save inside static/qrcodes/
-    qr_dir = os.path.join(app.root_path, "static", "qrcodes")
-    os.makedirs(qr_dir, exist_ok=True)
-    path = os.path.join(qr_dir, f"table_{table_id}.png")
-    combined.save(path)
-
-    print(f"✅ QR code saved → {path}")
-    print(f"📎 QR links to: {url}")
-
-# Generate QR for Table 1 (only runs once at startup)
-generate_qr("1")
-
-# === Routes ===
+# === ROUTES ===
 @app.route("/")
 def home():
     return redirect("/menu/1")
@@ -65,7 +35,39 @@ def home():
 def menu(table_id):
     return render_template("menu.html", table_id=table_id)
 
-# === Run Server ===
+@app.route('/checkout', methods=['GET', 'POST'])
+def checkout():
+    if request.method == 'POST':
+        data = request.get_json()
+        user_name = data.get('user_name')
+        items = data.get('items')
+
+        if not user_name or not items:
+            return jsonify({"error": "Invalid data"}), 400
+
+        # Save order to DB
+        order = Order(user_name=user_name, items=json.dumps(items))
+        db.session.add(order)
+        db.session.commit()
+
+        return jsonify({"message": f"Thank you for your order, {user_name}!"})
+
+    else:
+        # GET request to show checkout page
+        return render_template('checkout.html')
+
+@app.route('/orders')
+def orders():
+    all_orders = Order.query.all()
+    orders_list = []
+    for order in all_orders:
+        orders_list.append({
+            "user_name": order.user_name,
+            "items": json.loads(order.items)  # convert JSON string to list/dict
+        })
+    return render_template('orders.html', orders=orders_list)
+
+# === RUN SERVER ===
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
