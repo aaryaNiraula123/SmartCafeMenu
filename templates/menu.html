@@ -2,977 +2,646 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Smart Café Menu</title>
-    <style>
-      /* Reset some default styles */
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        color: #333;
-        line-height: 1.6;
-      }
-
-      header {
-        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
-        padding: 20px;
-        display: flex;
-        align-items: center;
-        border-bottom: 3px solid #d9b382;
-        color: white;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      header img {
-        height: 60px;
-        margin-right: 20px;
-        border-radius: 50%;
-        border: 3px solid #d9b382;
-      }
-
-      header h1 {
-        font-style: italic;
-        font-weight: 700;
-        font-size: 2rem;
-        margin: 0;
-        user-select: none;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-      }
-
-      header h1 .coffee-emoji {
-        font-size: 1.8rem;
-        animation: bounce 2s infinite;
-      }
-
-      @keyframes bounce {
-        0%,
-        20%,
-        50%,
-        80%,
-        100% {
-          transform: translateY(0);
-        }
-        40% {
-          transform: translateY(-10px);
-        }
-        60% {
-          transform: translateY(-5px);
-        }
-      }
-
-      main {
-        display: flex;
-        padding: 20px;
-        gap: 30px;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-
-      .sidebar {
-        width: 300px;
-        background: linear-gradient(135deg, #d9b382 0%, #e6c79a 100%);
-        padding: 25px;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        height: fit-content;
-        position: sticky;
-        top: 20px;
-      }
-
-      .sidebar h2 {
-        font-weight: 700;
-        margin-bottom: 20px;
-        color: #4a2c2c;
-        text-align: center;
-        font-size: 1.4rem;
-      }
-
-      .search-container {
-        position: relative;
-        margin-bottom: 25px;
-      }
-
-      .search-container input[type="text"] {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #b18b6a;
-        border-radius: 25px;
-        font-size: 1rem;
-        transition: all 0.3s;
-        background: white;
-      }
-
-      .search-container input[type="text"]:focus {
-        outline: none;
-        border-color: #6b4f4f;
-        box-shadow: 0 0 10px rgba(107, 79, 79, 0.3);
-      }
-
-      .category-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin: 25px 0;
-      }
-
-      .category-buttons button {
-        padding: 15px 20px;
-        border-radius: 25px;
-        border: none;
-        font-weight: 700;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        background: linear-gradient(135deg, #b18b6a 0%, #c59d7a 100%);
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .category-buttons button::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.2),
-          transparent
-        );
-        transition: left 0.5s;
-      }
-
-      .category-buttons button:hover::before {
-        left: 100%;
-      }
-
-      .category-buttons button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-
-      .category-buttons button.active {
-        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
-        box-shadow: 0 0 20px rgba(107, 79, 79, 0.5);
-        transform: scale(1.05);
-      }
-
-      .cart {
-        background: linear-gradient(135deg, #f0e5cf 0%, #f7ead9 100%);
-        border: 3px solid #d9b382;
-        padding: 20px;
-        border-radius: 15px;
-        font-weight: 700;
-        color: #4a2c2c;
-        text-align: center;
-        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-
-      .cart h3 {
-        margin: 0 0 15px 0;
-        font-size: 1.2rem;
-      }
-
-      .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 10px 0;
-        padding: 8px;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-
-      .cart-item button {
-        background: #d9534f;
-        border: none;
-        color: white;
-        padding: 4px 8px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.8rem;
-        transition: all 0.3s;
-      }
-
-      .cart-item button:hover {
-        background: #c9302c;
-        transform: scale(1.1);
-      }
-
-      .cart-total {
-        border-top: 2px solid #d9b382;
-        padding-top: 15px;
-        margin-top: 15px;
-        font-size: 1.1rem;
-      }
-
-      .content {
-        flex-grow: 1;
-        min-width: 0;
-      }
-
-      .content h2 {
-        font-weight: 700;
-        margin-bottom: 30px;
-        color: #6b4f4f;
-        font-size: 2rem;
-        text-align: center;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      .menu-item {
-        margin-bottom: 30px;
-        padding: 20px;
-        border-radius: 15px;
-        display: flex;
-        gap: 20px;
-        align-items: center;
-        background: white;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s;
-        border: 1px solid #e0e0e0;
-      }
-
-      .menu-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-      }
-
-      .menu-item img {
-        width: 150px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s;
-      }
-
-      .menu-item:hover img {
-        transform: scale(1.05);
-      }
-
-      .menu-item-details {
-        flex-grow: 1;
-      }
-
-      .menu-item b {
-        display: block;
-        font-weight: 700;
-        font-size: 1.3rem;
-        margin-bottom: 8px;
-        color: #4a2c2c;
-      }
-
-      .menu-item-description {
-        color: #666;
-        font-size: 0.95rem;
-        margin-bottom: 10px;
-        line-height: 1.5;
-      }
-
-      .price {
-        font-weight: 700;
-        font-size: 1.2rem;
-        color: #d9534f;
-        margin-bottom: 10px;
-      }
-
-      .menu-item button {
-        background: linear-gradient(135deg, #6b4f4f 0%, #8b6f6f 100%);
-        border: none;
-        color: white;
-        padding: 12px 25px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        border-radius: 25px;
-        transition: all 0.3s;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        min-width: 120px;
-      }
-
-      .menu-item button:hover {
-        background: linear-gradient(135deg, #4a2c2c 0%, #6b4f4f 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-      }
-
-      .menu-item button:disabled {
-        background: #5cb85c;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .menu-item button:disabled:hover {
-        background: #5cb85c;
-        transform: none;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 1024px) {
-        main {
-          flex-direction: column;
-          padding: 15px;
-        }
-
-        .sidebar {
-          width: 100%;
-          position: static;
-          margin-bottom: 20px;
-        }
-
-        .category-buttons {
-          flex-direction: row;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-
-        .category-buttons button {
-          flex: 1;
-          min-width: 120px;
-        }
-      }
-
-      @media (max-width: 768px) {
-        header {
-          flex-direction: column;
-          text-align: center;
-          padding: 15px;
-        }
-
-        header img {
-          margin: 0 0 10px 0;
-        }
-
-        header h1 {
-          font-size: 1.5rem;
-        }
-
-        .menu-item {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .menu-item img {
-          width: 100%;
-          max-width: 300px;
-          height: 200px;
-        }
-
-        .sidebar {
-          padding: 15px;
-        }
-
-        .content h2 {
-          font-size: 1.5rem;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .category-buttons {
-          flex-direction: column;
-        }
-
-        .category-buttons button {
-          font-size: 0.9rem;
-          padding: 12px 15px;
-        }
-
-        .menu-item {
-          padding: 15px;
-        }
-
-        .menu-item b {
-          font-size: 1.1rem;
-        }
-
-        .sidebar {
-          padding: 10px;
-        }
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <title>Cafe Menu</title>
   </head>
   <body>
-    <header>
+    <!-- Header Section -->
+    <div class="header">
       <img
-        src="https://i.pinimg.com/736x/be/cb/2c/becb2c74f916609713e1553d7a7a355e.jpg"
-        alt="BIC Cafe Logo"
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="Cafe Logo"
+        class="logo"
       />
-      <h1>
-        WELCOME TO OUR <i>BIC CAFÉ</i> <span class="coffee-emoji">☕</span>
-      </h1>
-    </header>
-    <main>
-      <aside class="sidebar">
-        <h2>Categories</h2>
-        <div class="search-container">
-          <input type="text" id="searchInput" placeholder="Search menu..." />
-        </div>
-        <div class="category-buttons" id="categoryButtons">
-          <button class="active" data-category="all">All Items</button>
-          <button data-category="veg">Veg Items</button>
-          <button data-category="nonveg">Non-Veg Items</button>
-          <button data-category="drinks">Drinks</button>
-          <button data-category="dessert">Desserts</button>
-        </div>
-        <div class="cart">
-          <h3>Your Cart</h3>
-          <div id="cartItems"></div>
-          <div class="cart-total">
-            <p>Total items: <span id="cartCount">0</span></p>
-            <p>Total: <span id="cartTotal">Rs. 0</span></p>
-          </div>
-        </div>
-      </aside>
-      <section class="content">
-        <h2>Menu</h2>
-        <div id="menuItems">
-          <!-- Veg Items -->
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Paneer Butter Masala"
-            data-price="250"
-          >
+      <h1>WELCOME TO OUR SMART CAFÉ☕</h1>
+    </div>
+
+    <!-- Sidebarcart -->
+    <div class="sidebar">
+      <h2 class="page_header">Categories</h2>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search menu..." />
+        <button onclick="searchMenu()">Search</button>
+      </div>
+
+      <!-- Filter Dropdown -->
+      <div class="filter-container">
+        <label for="filter">Sort by:</label>
+        <select id="filter" onchange="filterMenu()">
+          <option value="default">Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="tab" id="veg-tab" onclick="showVegItems()">Veg Items</div>
+      <div class="tab" id="nonveg-tab" onclick="showNonVegItems()">
+        Non-Veg Items
+      </div>
+      <div class="tab" id="drinks-tab" onclick="showdrinks()">Drinks Items</div>
+      <div class="tab" id="desert-tab" onclick="showdesert()">
+        Sweets & Deserts Items
+      </div>
+
+      <!-- Shopping Cart Section -->
+      <div class="cart-section">
+        <h3>Your Cart</h3>
+        <ul id="cart-items"></ul>
+        <p id="cart-total">Total: Rs. 0</p>
+        <button onclick="resetCart()" id="reset-btn">🗑️ Reset Card</button>
+        <button
+          onclick="finalOrder()"
+          id="final-order-btn"
+          class="final-order-btn"
+        >
+          Confirm Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Veg Menu -->
+      <div id="vegcontents" class="tab-content">
+        <h2 class="section-title">Veg Menu</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
             <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjQqprzGvQsVM_OXFlszaO8jGvdMnEq9bhew&s"
+              src="{{ url_for('static', filename='images/Butter panner.jpeg') }}"
               alt="Paneer Butter Masala"
             />
-            <div class="menu-item-details">
-              <b>Paneer Butter Masala</b>
-              <p class="menu-item-description">
-                Rich and creamy paneer curry with aromatic spices and butter
-              </p>
-              <p class="price">Rs. 250</p>
-            </div>
-            <button onclick="addToCart('Paneer Butter Masala', 250, this)">
+            <h4>Paneer Butter Masala</h4>
+            <p>Rs. 250</p>
+            <button onclick="addToCart('Paneer Butter Masala', 250)">
               Add to Cart
             </button>
           </div>
 
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Veg Biryani"
-            data-price="180"
-          >
+          <div class="menu-card">
             <img
-              src="https://www.madhuseverydayindian.com/wp-content/uploads/2022/11/easy-vegetable-biryani.jpg"
+              src="{{ url_for('static', filename='images/vegbiryani.jpeg') }}"
               alt="Veg Biryani"
             />
-            <div class="menu-item-details">
-              <b>Veg Biryani</b>
-              <p class="menu-item-description">
-                Fragrant basmati rice cooked with mixed vegetables and aromatic
-                spices
-              </p>
-              <p class="price">Rs. 180</p>
-            </div>
-            <button onclick="addToCart('Veg Biryani', 180, this)">
-              Add to Cart
-            </button>
+            <h4>Veg-Biryani</h4>
+            <p>Rs. 100</p>
+            <button onclick="addToCart('Veg-Biryani', 100)">Add to Cart</button>
           </div>
 
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Palak Paneer"
-            data-price="200"
-          >
+          <div class="menu-card">
             <img
-              src="https://img.freepik.com/free-photo/palak-paneer-indian-curry-with-spinach-vegetable-plate_2829-10745.jpg"
-              alt="Palak Paneer"
+              src="{{ url_for('static', filename='images/Chole.jpg') }}"
+              alt="Chole Bhature"
             />
-            <div class="menu-item-details">
-              <b>Palak Paneer</b>
-              <p class="menu-item-description">
-                Fresh spinach curry with soft paneer cubes in a creamy gravy
-              </p>
-              <p class="price">Rs. 200</p>
-            </div>
-            <button onclick="addToCart('Palak Paneer', 200, this)">
+            <h4>Chole bhature</h4>
+            <p>Rs. 70</p>
+            <button onclick="addToCart('Chole Bhatura', 70)">
               Add to Cart
             </button>
           </div>
 
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Dal Makhani"
-            data-price="160"
-          >
+          <div class="menu-card">
             <img
-              src="https://www.cookwithmanali.com/wp-content/uploads/2019/04/Restaurant-Style-Dal-Makhani.jpg"
+              src="{{ url_for('static', filename='images/vegmomo.jpg') }}"
+              alt="Veg Momo"
+            />
+            <h4>Veg-Momo</h4>
+            <p>Rs. 90</p>
+            <button onclick="addToCart('Veg-Momo', 90)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Samosa.jpg') }}"
+              alt="Samosa"
+            />
+            <h4>Samosa</h4>
+            <p>Rs. 30</p>
+            <button onclick="addToCart('Samosa', 30)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Dal-Makhani.jpeg') }}"
               alt="Dal Makhani"
             />
-            <div class="menu-item-details">
-              <b>Dal Makhani</b>
-              <p class="menu-item-description">
-                Creamy black lentils slow-cooked with butter and aromatic spices
-              </p>
-              <p class="price">Rs. 160</p>
-            </div>
-            <button onclick="addToCart('Dal Makhani', 160, this)">
+            <h4>Dal-Makhani</h4>
+            <p>Rs. 290</p>
+            <button onclick="addToCart('Dal-Makhani', 290)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Masala Dosa.jpeg') }}"
+              alt="Masala Dosa"
+            />
+            <h4>Masala Dosa</h4>
+            <p>Rs. 200</p>
+            <button onclick="addToCart('Masala Dosa', 200)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Palak Paneer.jpeg') }}"
+              alt="Palak Paneer"
+            />
+            <h4>Palak Paneer</h4>
+            <p>Rs. 250</p>
+            <button onclick="addToCart('Palak Paneer', 250)">
               Add to Cart
             </button>
           </div>
 
-          <div
-            class="menu-item"
-            data-category="veg"
-            data-name="Aloo Gobi"
-            data-price="140"
-          >
+          <div class="menu-card">
             <img
-              src="https://media.istockphoto.com/id/1096057548/photo/aloo-gobi-cauliflower-potato-curry.jpg?s=612x612&w=0&k=20&c=FHnOLRLfBn0zQDHsy_gutmT0iXa4D0g5vg1uxJnc_40="
-              alt="Aloo Gobi"
+              src="{{ url_for('static', filename='images/Paneer Tikka.jpeg') }}"
+              alt="Paneer Tikka"
             />
-            <div class="menu-item-details">
-              <b>Aloo Gobi</b>
-              <p class="menu-item-description">
-                Classic dry curry with potatoes and cauliflower cooked with
-                traditional spices
-              </p>
-              <p class="price">Rs. 140</p>
-            </div>
-            <button onclick="addToCart('Aloo Gobi', 140, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <!-- Non-Veg Items -->
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Chicken Curry"
-            data-price="300"
-          >
-            <img
-              src="https://t4.ftcdn.net/jpg/04/35/23/95/360_F_435239569_iTa3kLtV6PtlOBchUV4w7J1Tm0oSCx1l.jpg"
-              alt="Chicken Curry"
-            />
-            <div class="menu-item-details">
-              <b>Chicken Curry</b>
-              <p class="menu-item-description">
-                Tender chicken pieces cooked in a rich, spicy tomato-based gravy
-              </p>
-              <p class="price">Rs. 300</p>
-            </div>
-            <button onclick="addToCart('Chicken Curry', 300, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Butter Chicken"
-            data-price="320"
-          >
-            <img
-              src="https://cafedelites.com/wp-content/uploads/2019/01/Butter-Chicken-IMAGE-27.jpg"
-              alt="Butter Chicken"
-            />
-            <div class="menu-item-details">
-              <b>Butter Chicken</b>
-              <p class="menu-item-description">
-                Creamy tomato-based curry with tender chicken pieces in a rich
-                sauce
-              </p>
-              <p class="price">Rs. 320</p>
-            </div>
-            <button onclick="addToCart('Butter Chicken', 320, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Chicken Biryani"
-            data-price="280"
-          >
-            <img
-              src="https://t3.ftcdn.net/jpg/04/41/20/18/360_F_441201852_XQqp1wbAQj9udOC3iT7D0ahKgaf71bns.jpg"
-              alt="Chicken Biryani"
-            />
-            <div class="menu-item-details">
-              <b>Chicken Biryani</b>
-              <p class="menu-item-description">
-                Aromatic basmati rice layered with marinated chicken and cooked
-                to perfection
-              </p>
-              <p class="price">Rs. 280</p>
-            </div>
-            <button onclick="addToCart('Chicken Biryani', 280, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Fish Curry"
-            data-price="350"
-          >
-            <img
-              src="https://www.recipetineats.com/tachyon/2020/10/Goan-Fish-Curry_6-SQ.jpg"
-              alt="Fish Curry"
-            />
-            <div class="menu-item-details">
-              <b>Fish Curry</b>
-              <p class="menu-item-description">
-                Fresh fish cooked in coconut milk with traditional coastal
-                spices
-              </p>
-              <p class="price">Rs. 350</p>
-            </div>
-            <button onclick="addToCart('Fish Curry', 350, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="nonveg"
-            data-name="Mutton Rogan Josh"
-            data-price="520"
-          >
-            <img
-              src="https://headbangerskitchen.com/wp-content/uploads/2024/08/ROGANJOSH-H2.jpg"
-              alt="Mutton Rogan Josh"
-            />
-            <div class="menu-item-details">
-              <b>Mutton Rogan Josh</b>
-              <p class="menu-item-description">
-                Tender mutton pieces slow-cooked in aromatic Kashmiri spices
-              </p>
-              <p class="price">Rs. 420</p>
-            </div>
-            <button onclick="addToCart('Mutton Rogan Josh', 420, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <!-- Drinks -->
-          <div
-            class="menu-item"
-            data-category="drinks"
-            data-name="Masala Chai"
-            data-price="80"
-          >
-            <img
-              src="https://media.istockphoto.com/id/1300484768/photo/traditional-middle-eastern-indian-drink-masala-or-karak-chai-closeup.jpg?s=612x612&w=0&k=20&c=PJFT9vvXSyxMMX5g7WYSlfwnpRFi4oCWhWKTZBV5rb4="
-              alt="Masala Chai"
-            />
-            <div class="menu-item-details">
-              <b>Masala Chai</b>
-              <p class="menu-item-description">
-                Traditional Indian tea brewed with aromatic spices and milk
-              </p>
-              <p class="price">Rs. 80</p>
-            </div>
-            <button onclick="addToCart('Masala Chai', 80, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="drinks"
-            data-name="Coffee"
-            data-price="90"
-          >
-            <img
-              src="https://images.pexels.com/photos/189258/pexels-photo-189258.jpeg?cs=srgb&dl=pexels-david-bares-42311-189258.jpg&fm=jpg"
-              alt="Coffee"
-            />
-            <div class="menu-item-details">
-              <b>Coffee</b>
-              <p class="menu-item-description">
-                Rich and aromatic freshly brewed coffee to energize your day
-              </p>
-              <p class="price">Rs. 90</p>
-            </div>
-            <button onclick="addToCart('Coffee', 90, this)">Add to Cart</button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="drinks"
-            data-name="Lassi"
-            data-price="120"
-          >
-            <img
-              src="https://media.istockphoto.com/id/1008799838/photo/image-of-a-glass-of-lassi-made-from-milk-curd.jpg?s=612x612&w=0&k=20&c=L--UXX-L2bsK6Jy-mEigONFj9QEJyvU8b77FJnBLpBg="
-              alt="Lassi"
-            />
-            <div class="menu-item-details">
-              <b>Matka Lassi</b>
-              <p class="menu-item-description">
-                Cool and refreshing yogurt-based drink, available in sweet and
-                salty varieties
-              </p>
-              <p class="price">Rs. 120</p>
-            </div>
-            <button onclick="addToCart('Lassi', 120, this)">Add to Cart</button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="drinks"
-            data-name="Fresh Lime Soda"
-            data-price="100"
-          >
-            <img
-              src="https://recipes.clubandresortchef.com/wp-content/uploads/2022/03/Eco-Mojito-Cocktail_recipe_JW-Marriott-San-Antonio-Hill-Country-Resort-Spa.jpg"
-              alt="Mojito"
-            />
-            <div class="menu-item-details">
-              <b>Virgin Mojito</b>
-              <p class="menu-item-description">
-                Refreshing lime juice with soda water and a hint of mint
-              </p>
-              <p class="price">Rs. 100</p>
-            </div>
-            <button onclick="addToCart('Fresh Lime Soda', 100, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="drinks"
-            data-name="Mango Shake"
-            data-price="150"
-          >
-            <img
-              src="https://www.indianhealthyrecipes.com/wp-content/uploads/2021/04/mango-milkshake.jpg"
-              alt="Mango Shake"
-            />
-            <div class="menu-item-details">
-              <b>Mango Shake</b>
-              <p class="menu-item-description">
-                Creamy mango milkshake made with fresh mangoes and milk
-              </p>
-              <p class="price">Rs. 150</p>
-            </div>
-            <button onclick="addToCart('Mango Shake', 150, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <!-- Desserts -->
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Gulab Jamun"
-            data-price="120"
-          >
-            <img
-              src="https://www.cookwithmanali.com/wp-content/uploads/2020/10/Kala-Jamun-500x375.jpg"
-              alt="Gulab Jamun"
-            />
-            <div class="menu-item-details">
-              <b>Gulab Jamun</b>
-              <p class="menu-item-description">
-                Soft milk dumplings soaked in rose-flavored sugar syrup
-              </p>
-              <p class="price">Rs. 120</p>
-            </div>
-            <button onclick="addToCart('Gulab Jamun', 120, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Rasgulla"
-            data-price="100"
-          >
-            <img
-              src="https://vittalsweets.com/wp-content/uploads/2023/11/Rasagulla.jpg"
-              alt="Rasgulla"
-            />
-            <div class="menu-item-details">
-              <b>Rasgulla</b>
-              <p class="menu-item-description">
-                Spongy cottage cheese balls soaked in sugar syrup
-              </p>
-              <p class="price">Rs. 100</p>
-            </div>
-            <button onclick="addToCart('Rasgulla', 100, this)">
-              Add to Cart
-            </button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Kulfi"
-            data-price="80"
-          >
-            <img
-              src="https://static.toiimg.com/thumb/84786580.cms?width=1200&height=900"
-              alt="Kulfi"
-            />
-            <div class="menu-item-details">
-              <b>Kulfi</b>
-              <p class="menu-item-description">
-                Traditional Indian ice cream with rich, creamy texture and
-                cardamom flavor
-              </p>
-              <p class="price">Rs. 80</p>
-            </div>
-            <button onclick="addToCart('Kulfi', 80, this)">Add to Cart</button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Kheer"
-            data-price="90"
-          >
-            <img
-              src="https://www.honeywhatscooking.com/wp-content/uploads/2020/10/Rice-Kheer-Indian-Rice-Pudding44.jpg"
-              alt="Kheer"
-            />
-            <div class="menu-item-details">
-              <b>Kheer</b>
-              <p class="menu-item-description">
-                Creamy rice pudding cooked in milk with cardamom and nuts
-              </p>
-              <p class="price">Rs. 90</p>
-            </div>
-            <button onclick="addToCart('Kheer', 90, this)">Add to Cart</button>
-          </div>
-
-          <div
-            class="menu-item"
-            data-category="dessert"
-            data-name="Jalebi"
-            data-price="110"
-          >
-            <img
-              src="https://media.istockphoto.com/id/1159362325/photo/bread-pakora.jpg?s=612x612&w=0&k=20&c=93uILcInCMXroXgjEJYXNeUzWh5NASSrEnylAgW7hcs="
-              alt="Jalebi"
-            />
-            <div class="menu-item-details">
-              <b>Jalebi</b>
-              <p class="menu-item-description">
-                Crispy spiral-shaped sweets soaked in sugar syrup
-              </p>
-              <p class="price">Rs. 110</p>
-            </div>
-            <button onclick="addToCart('Jalebi', 110, this)">
+            <h4>Paneer Tikka</h4>
+            <p>Rs. 200</p>
+            <button onclick="addToCart('Paneer Tikka', 200)">
               Add to Cart
             </button>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const searchInput = document.getElementById("searchInput");
-        const categoryButtons = document.getElementById("categoryButtons");
-        const menuItems = document.querySelectorAll("#menuItems .menu-item");
-        const cartCount = document.getElementById("cartCount");
-        const cartTotal = document.getElementById("cartTotal");
-        const cartItems = document.getElementById("cartItems");
+      <!-- Non-Veg Menu -->
+      <div id="nonvegcontents" class="tab-content">
+        <h2 class="section-title">Non-Veg Menu</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Biryani.jpeg') }}"
+              alt="Chicken Biryani"
+            />
+            <h4>Chicken Biryani</h4>
+            <p>Rs. 280</p>
+            <button onclick="addToCart('Chicken Biryani', 280)">
+              Add to Cart
+            </button>
+          </div>
 
-        let activeCategory = "all";
-        let cart = {};
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton Biryani.jpg') }}"
+              alt="Mutton Biryani"
+            />
+            <h4>Mutton Biryani</h4>
+            <p>Rs. 320</p>
+            <button onclick="addToCart('Mutton Biryani', 320)">
+              Add to Cart
+            </button>
+          </div>
 
-        function filterMenu() {
-          const searchText = searchInput.value.toLowerCase();
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton Sekuwa.jpeg') }}"
+              alt="Mutton Sekuwa"
+            />
+            <h4>Mutton Sekuwa</h4>
+            <p>Rs. 200</p>
+            <button onclick="addToCart('Mutton Sekuwa', 120)">
+              Add to Cart
+            </button>
+          </div>
 
-          menuItems.forEach((item) => {
-            const name = item.dataset.name.toLowerCase();
-            const category = item.dataset.category;
-            const matchesCategory =
-              activeCategory === "all" || category === activeCategory;
-            const matchesSearch = name.includes(searchText);
-            item.style.display =
-              matchesCategory && matchesSearch ? "flex" : "none";
-          });
-        }
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Sekuwa.jpg') }}"
+              alt="Chicken Sekuwa"
+            />
+            <h4>Chicken Sekuwa</h4>
+            <p>Rs. 160</p>
+            <button onclick="addToCart('Chicken Sekuwa', 160)">
+              Add to Cart
+            </button>
+          </div>
 
-        categoryButtons.addEventListener("click", (e) => {
-          if (e.target.tagName !== "BUTTON") return;
-          activeCategory = e.target.dataset.category;
-          categoryButtons.querySelectorAll("button").forEach((btn) => {
-            btn.classList.toggle("active", btn === e.target);
-          });
-          filterMenu();
-        });
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Lollipop.jpeg') }}"
+              alt="Chicken Lollipop"
+            />
+            <h4>Chicken Lollipop</h4>
+            <p>Rs. 180</p>
+            <button onclick="addToCart('Chicken Lollipop', 180)">
+              Add to Cart
+            </button>
+          </div>
 
-        searchInput.addEventListener("input", filterMenu);
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Curry.jpeg') }}"
+              alt="Chicken Curry"
+            />
+            <h4>Chicken Curry</h4>
+            <p>Rs. 200</p>
+            <button onclick="addToCart('Chicken Curry', 200)">
+              Add to Cart
+            </button>
+          </div>
 
-        function updateCartDisplay() {
-          const totalItems = Object.values(cart).reduce(
-            (sum, item) => sum + item.quantity,
-            0
-          );
-          const totalPrice = Object.values(cart).reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0
-          );
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton Curry.jpeg') }}"
+              alt="Mutton Curry"
+            />
+            <h4>Mutton Curry</h4>
+            <p>Rs. 250</p>
+            <button onclick="addToCart('Mutton Curry', 250)">
+              Add to Cart
+            </button>
+          </div>
 
-          cartCount.textContent = totalItems;
-          cartTotal.textContent = `Rs. ${totalPrice}`;
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Chowmein.jpeg') }}"
+              alt="Chicken Chowmein"
+            />
+            <h4>Chicken Chowmein</h4>
+            <p>Rs. 150</p>
+            <button onclick="addToCart('Chicken Chowmein', 150)">
+              Add to Cart
+            </button>
+          </div>
 
-          cartItems.innerHTML = "";
-          Object.entries(cart).forEach(([name, item]) => {
-            const cartItem = document.createElement("div");
-            cartItem.classList.add("cart-item");
-            cartItem.innerHTML = `
-          <span>${name} x ${item.quantity}</span>
-          <button onclick="removeFromCart('${name}')">&minus;</button>
-        `;
-            cartItems.appendChild(cartItem);
-          });
-        }
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/chickenmomo.jpeg') }}"
+              alt="Chicken Momo"
+            />
+            <h4>Chicken Momo</h4>
+            <p>Rs. 120</p>
+            <button onclick="addToCart('Chicken Momo', 120)">
+              Add to Cart
+            </button>
+          </div>
 
-        window.addToCart = function (name, price, button) {
-          if (!cart[name]) {
-            cart[name] = { quantity: 1, price };
-          } else {
-            cart[name].quantity += 1;
-          }
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton Chowmein.jpg') }}"
+              alt="Mutton Chowmein"
+            />
+            <h4>Mutton Chowmein</h4>
+            <p>Rs. 160</p>
+            <button onclick="addToCart('MuttonChowmein', 160)">
+              Add to Cart
+            </button>
+          </div>
 
-          updateCartDisplay();
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton momo.jpeg') }}"
+              alt="Mutton Momo"
+            />
+            <h4>Mutton Momo</h4>
+            <p>Rs. 140</p>
+            <button onclick="addToCart('Mutton Momo', 140)">Add to Cart</button>
+          </div>
 
-          button.disabled = true;
-          button.textContent = "Added";
-          setTimeout(() => {
-            button.disabled = false;
-            button.textContent = "Add to Cart";
-          }, 1000);
-        };
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Pizza.jpeg') }}"
+              alt="Chicken Pizza"
+            />
+            <h4>Chicken Pizza</h4>
+            <p>Rs. 220</p>
+            <button onclick="addToCart('Chicken Pizza', 220)">
+              Add to Cart
+            </button>
+          </div>
 
-        window.removeFromCart = function (name) {
-          if (cart[name]) {
-            cart[name].quantity -= 1;
-            if (cart[name].quantity <= 0) {
-              delete cart[name];
-            }
-            updateCartDisplay();
-          }
-        };
-      });
-    </script>
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chicken Sandwich Rol.jpeg') }}"
+              alt="Chicken Sandwich Roll"
+            />
+            <h4>Chicken Sandwich Roll</h4>
+            <p>Rs. 160</p>
+            <button onclick="addToCart('Chicken Sandwich Roll', 160)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mutton Sandwich Roll.jpeg') }}"
+              alt="Mutton Sandwich Roll"
+            />
+            <h4>Mutton Sandwich Roll</h4>
+            <p>Rs. 180</p>
+            <button onclick="addToCart('Mutton Sandwich Roll', 180)">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="drinkcontents" class="tab-content">
+        <!-- Hot Drinks Section -->
+        <h2 class="drink-section-heading">Hot Drinks</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Milk Tea.jpeg') }}"
+              alt="Milk Tea"
+            />
+            <h4>Milk Tea</h4>
+            <p>Rs. 30</p>
+            <button onclick="addToCart('Milk Tea', 30)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Black Tea.jpeg') }}"
+              alt="Black Tea"
+            />
+            <h4>Black Tea</h4>
+            <p>Rs. 20</p>
+            <button onclick="addToCart('Black Tea', 20)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Milk Cofee.jpeg') }}"
+              alt="Milk Coffee"
+            />
+            <h4>Milk Coffee</h4>
+            <p>Rs. 40</p>
+            <button onclick="addToCart('Milk Coffee', 40)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Black Coffee.jpeg') }}"
+              alt="Black Coffee"
+            />
+            <h4>Black Coffee</h4>
+            <p>Rs. 25</p>
+            <button onclick="addToCart('Black Coffee', 25)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Hot Chocolate.jpeg') }}"
+              alt="Hot Chocolate"
+            />
+            <h4>Hot Chocolate</h4>
+            <p>Rs. 100</p>
+            <button onclick="addToCart('Hot Chocolate', 100)">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+
+        <!-- Cold Drinks Section -->
+        <h2 class="drink-section-heading">Cold Drinks</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Water.jpeg') }}"
+              alt="Water"
+            />
+            <h4>Water</h4>
+            <p>Rs. 20</p>
+            <button onclick="addToCart('Water', 20)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Coca-Cola.jpeg') }}"
+              alt="Coca-Cola"
+            />
+            <h4>Coca-Cola</h4>
+            <p>Rs. 50</p>
+            <button onclick="addToCart('Coca-Cola', 50)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Fanta.jpeg') }}"
+              alt="Fanta"
+            />
+            <h4>Fanta</h4>
+            <p>Rs. 50</p>
+            <button onclick="addToCart('Fanta', 50)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Sprite.jpeg') }}"
+              alt="Sprite"
+            />
+            <h4>Sprite</h4>
+            <p>Rs. 50</p>
+            <button onclick="addToCart('Sprite', 50)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Cold Coffee.jpeg') }}"
+              alt="Cold Coffee"
+            />
+            <h4>Cold Coffee</h4>
+            <p>Rs. 80</p>
+            <button onclick="addToCart('Cold Coffee', 80)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Mango Lassi.jpeg') }}"
+              alt="Mango Lassi"
+            />
+            <h4>Mango Lassi</h4>
+            <p>Rs. 90</p>
+            <button onclick="addToCart('Mango Lassi', 90)">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dessert Menu -->
+      <div id="desertcontents" class="tab-content">
+        <!-- Sweets Section -->
+        <h2 class="desert-section-heading">Sweets</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Jalebi.jpeg') }}"
+              alt="Jalebi"
+            />
+            <h4>Jalebi</h4>
+            <p>Rs. 30</p>
+            <button onclick="addToCart('Jalebi', 30)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Gulab Jamun.jpeg') }}"
+              alt="Gulab Jamun"
+            />
+            <h4>Gulab Jamun</h4>
+            <p>Rs. 40</p>
+            <button onclick="addToCart('Gulab Jamun', 40)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Rasgulla.jpeg') }}"
+              alt="Rasgulla"
+            />
+            <h4>Rasgulla</h4>
+            <p>Rs. 45</p>
+            <button onclick="addToCart('Rasgulla', 45)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Barfi.jpeg') }}"
+              alt="Barfi"
+            />
+            <h4>Barfi</h4>
+            <p>Rs. 35</p>
+            <button onclick="addToCart('Barfi', 35)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Kaju Katli.jpeg') }}"
+              alt="Kaju Katli"
+            />
+            <h4>Kaju Katli</h4>
+            <p>Rs. 50</p>
+            <button onclick="addToCart('Kaju Katli', 50)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Milk Peda.jpeg') }}"
+              alt="Milk Peda"
+            />
+            <h4>Milk Peda</h4>
+            <p>Rs. 25</p>
+            <button onclick="addToCart('Milk Peda', 25)">Add to Cart</button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Rasmalai.jpeg') }}"
+              alt="Rasmalai"
+            />
+            <h4>Rasmalai</h4>
+            <p>Rs. 60</p>
+            <button onclick="addToCart('Rasmalai', 60)">Add to Cart</button>
+          </div>
+        </div>
+
+        <!-- Desserts Section -->
+        <h2 class="desert-section-heading">Desserts</h2>
+        <div class="menu-grid">
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Chocalate Ice-Cream.jpeg') }}"
+              alt="Chocolate Ice-Cream"
+            />
+            <h4>Chocolate Ice-Cream</h4>
+            <p>Rs. 95</p>
+            <button onclick="addToCart('Chocolate Ice-Cream', 95)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Vannila Ice-cream.jpeg') }}"
+              alt="Vanilla Ice-cream"
+            />
+            <h4>Vanilla Ice-cream</h4>
+            <p>Rs. 90</p>
+            <button onclick="addToCart('Vanilla Ice-cream', 90)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Strawberry Ice-cream.jpeg') }}"
+              alt="Strawberry Ice-cream"
+            />
+            <h4>Strawberry Ice-cream</h4>
+            <p>Rs. 90</p>
+            <button onclick="addToCart('Strawberry Ice-cream', 90)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Butter scotch Ice-Cream.jpeg') }}"
+              alt="Butter scotch Ice-Cream"
+            />
+            <h4>Butter scotch Ice-Cream</h4>
+            <p>Rs. 90</p>
+            <button onclick="addToCart('Butter scotch Ice-Cream', 90)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Cocoa Brownie.jpeg') }}"
+              alt="Cocoa Brownie"
+            />
+            <h4>Cocoa Brownie</h4>
+            <p>Rs. 50</p>
+            <button onclick="addToCart('Cocoa Brownie', 50)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Black Forest Cake.jpeg') }}"
+              alt="Black Forest Cake"
+            />
+            <h4>Black Forest Cake</h4>
+            <p>Rs. 100</p>
+            <button onclick="addToCart('Black Forest Cake', 100)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Red Velvet Cake.jpeg') }}"
+              alt="Red Velvet Cake"
+            />
+            <h4>Red Velvet Cake</h4>
+            <p>Rs. 120</p>
+            <button onclick="addToCart('Red Velvet Cake', 120)">
+              Add to Cart
+            </button>
+          </div>
+
+          <div class="menu-card">
+            <img
+              src="{{ url_for('static', filename='images/Cheese Cake.jpeg') }}"
+              alt="Cheese Cake"
+            />
+            <h4>Cheese Cake</h4>
+            <p>Rs. 100</p>
+            <button onclick="addToCart('Cheese Cake', 100)">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>
