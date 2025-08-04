@@ -1,90 +1,54 @@
-/* order.css */
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f9;
+  background-color: #f2f2f2;
   margin: 0;
-  padding: 20px;
+  padding: 30px;
   color: #333;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
 h1 {
-  font-weight: 700;
-  color: #2c3e50;
-}
-
-main {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.order-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 25px;
-  transition: box-shadow 0.3s ease;
-}
-
-.order-card:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.order-card h2 {
-  margin-top: 0;
-  color: #2980b9;
-}
-
-.order-card ul {
-  list-style-type: none;
-  padding-left: 0;
-}
-
-.order-card li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  font-size: 1rem;
-}
-
-.order-card li:last-child {
-  border-bottom: none;
-}
-
-.item-name {
-  font-weight: 600;
-  flex: 2;
-}
-
-.item-qty {
-  flex: 1;
   text-align: center;
-  color: #555;
+  margin-bottom: 40px;
+  color: #222;
 }
 
-.item-price {
-  flex: 1;
-  text-align: right;
-  color: #27ae60;
-  font-weight: 700;
+.order {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.order h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #6f8f72;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #698a71;
+  color: white;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+tr:last-child td {
+  border-bottom: none;
 }
 
 .no-orders {
   text-align: center;
-  font-style: italic;
-  color: #999;
-  font-size: 1.2rem;
-}
-
-footer {
-  text-align: center;
-  margin-top: 40px;
-  color: #777;
-  font-size: 0.9rem;
+  color: #888;
+  font-size: 18px;
 }

@@ -9,22 +9,32 @@
     />
   </head>
   <body>
-    <h1>All Orders</h1>
+    <h1>Database of all orders from the User</h1>
 
     {% if orders %} {% for order in orders %}
     <div class="order">
       <h3>User: {{ order.user_name }}</h3>
-      <ul>
-        {% for item in order["items"] %}
-        <li>
-          {{ item.name }} x{{ item.quantity }} - Rs. {{ item.price *
-          item.quantity }}
-        </li>
-        {% endfor %}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Total (Rs.)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order["items"] %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price * item.quantity }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
     {% endfor %} {% else %}
-    <p>No orders found.</p>
+    <p class="no-orders">No orders found.</p>
     {% endif %}
   </body>
 </html>

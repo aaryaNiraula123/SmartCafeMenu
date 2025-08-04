@@ -642,6 +642,43 @@
       </div>
     </div>
 
+    <!-- Chatbot elements -->
+    <div class="chatbot-btn">
+      <img
+        src="{{ url_for('static', filename='images/bot.jpg') }}"
+        alt="Chat with us"
+        id="chatbot-icon"
+      />
+    </div>
+
+    <div class="chatbot-container" id="chatbot-container">
+      <div class="chatbot-header">
+        <h3>Cafe Assistant</h3>
+        <button id="close-chatbot">×</button>
+      </div>
+      <div class="chatbot-messages" id="chatbot-messages">
+        <div class="bot-message">Hello! How can I help you today?</div>
+      </div>
+      <div class="chatbot-options">
+        {% for question in [ "What's on the menu today?", "What are your opening
+        hours?", "Where is your cafe located?", "Can I reserve a table?", "Do
+        you offer vegetarian/vegan options?", "Do you provide home delivery or
+        takeout?", "What payment methods do you accept?", "Do you take custom
+        cake or event orders?", "Do you have Wi-Fi for customers?", "How can I
+        leave a review or feedback?" ] %}
+        <button class="chat-option" data-question="{{ question }}">
+          {{ question }}
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+    <!-- In the head section -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bot.css') }}" />
+
+    <!-- Before closing body tag -->
+    <script src="{{ url_for('static', filename='bot.js') }}"></script>
   </body>
 </html>
