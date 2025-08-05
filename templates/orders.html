@@ -2,39 +2,79 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Orders</title>
+    <title>Admin - Orders</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='order.css') }}"
     />
   </head>
   <body>
-    <h1>Database of all orders from the User</h1>
+    <h1>Admin Panel - User Orders</h1>
 
     {% if orders %} {% for order in orders %}
     <div class="order">
-      <h3>User: {{ order.user_name }}</h3>
+      <h3>
+        User: {{ order.user_name }}
+        <button class="delete-all" data-user="{{ order.user_name }}">
+          🗑 Delete All
+        </button>
+      </h3>
       <table>
         <thead>
           <tr>
             <th>Item</th>
             <th>Quantity</th>
             <th>Total (Rs.)</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for item in order["items"] %}
+          {% set ns = namespace(user_total=0) %} {% for item in order["items"]
+          %} {% set item_total = item.price|int * item.quantity|int %} {% set
+          ns.user_total = ns.user_total + item_total %}
           <tr>
             <td>{{ item.name }}</td>
             <td>{{ item.quantity }}</td>
-            <td>{{ item.price * item.quantity }}</td>
+            <td>₹{{ item_total }}</td>
+            <td>
+              <button
+                class="plus"
+                data-user="{{ order.user_name }}"
+                data-item="{{ item.name }}"
+              >
+                ➕
+              </button>
+              <button
+                class="minus"
+                data-user="{{ order.user_name }}"
+                data-item="{{ item.name }}"
+              >
+                ➖
+              </button>
+              <button
+                class="delete-item"
+                data-user="{{ order.user_name }}"
+                data-item="{{ item.name }}"
+              >
+                ❌
+              </button>
+            </td>
           </tr>
           {% endfor %}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"><strong>Total</strong></td>
+            <td><strong>₹{{ ns.user_total }}</strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
     {% endfor %} {% else %}
     <p class="no-orders">No orders found.</p>
     {% endif %}
+
+    <script src="{{ url_for('static', filename='order.js') }}"></script>
   </body>
 </html>

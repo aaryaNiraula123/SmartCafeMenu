@@ -45,16 +45,30 @@ def checkout():
         if not user_name or not items:
             return jsonify({"error": "Invalid data"}), 400
 
-        # Save order to DB
-        order = Order(user_name=user_name, items=json.dumps(items))
-        db.session.add(order)
-        db.session.commit()
+        # Check if order already exists for this user
+        existing_order = Order.query.filter_by(user_name=user_name).first()
 
-        return jsonify({"message": f"Thank you for your order, {user_name}!"})
+        if existing_order:
+            # Merge new items with existing items
+            existing_items = json.loads(existing_order.items)
+
+            # Append new items
+            existing_items.extend(items)
+
+            # Update the existing order
+            existing_order.items = json.dumps(existing_items)
+            db.session.commit()
+            return jsonify({"message": f"Order updated for {user_name}!"})
+        else:
+            # Create new order
+            order = Order(user_name=user_name, items=json.dumps(items))
+            db.session.add(order)
+            db.session.commit()
+            return jsonify({"message": f"Thank you for your order, {user_name}!"})
 
     else:
-        # GET request to show checkout page
         return render_template('checkout.html')
+
 
 @app.route('/orders')
 def orders():
@@ -66,6 +80,64 @@ def orders():
             "items": json.loads(order.items)  # convert JSON string to list/dict
         })
     return render_template('orders.html', orders=orders_list)
+
+@app.route('/update_item', methods=['POST'])
+def update_item():
+    data = request.get_json()
+    user = data['user_name']
+    item_name = data['item_name']
+    action = data['action']  # 'add' or 'remove'
+
+    order = Order.query.filter_by(user_name=user).first()
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+
+    items = json.loads(order.items)
+    for item in items:
+        if item['name'] == item_name:
+            if action == 'add':
+                item['quantity'] += 1
+            elif action == 'remove':
+                item['quantity'] -= 1
+                if item['quantity'] <= 0:
+                    items.remove(item)
+            break
+
+    order.items = json.dumps(items)
+    db.session.commit()
+    return jsonify({"message": "Item updated"})
+
+
+@app.route('/delete_item', methods=['POST'])
+def delete_item():
+    data = request.get_json()
+    user = data['user_name']
+    item_name = data['item_name']
+
+    order = Order.query.filter_by(user_name=user).first()
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+
+    items = json.loads(order.items)
+    items = [item for item in items if item['name'] != item_name]
+
+    order.items = json.dumps(items)
+    db.session.commit()
+    return jsonify({"message": "Item deleted"})
+
+
+@app.route('/delete_order', methods=['POST'])
+def delete_order():
+    data = request.get_json()
+    user = data['user_name']
+
+    order = Order.query.filter_by(user_name=user).first()
+    if order:
+        db.session.delete(order)
+        db.session.commit()
+        return jsonify({"message": "Order deleted"})
+    else:
+        return jsonify({"error": "Order not found"}), 404
 
 # === RUN SERVER ===
 if __name__ == "__main__":

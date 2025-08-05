@@ -680,5 +680,66 @@
 
     <!-- Before closing body tag -->
     <script src="{{ url_for('static', filename='bot.js') }}"></script>
+
+    <!-- Add this before the closing </body> tag -->
+<!-- Order Confirmation Modal -->
+<div id="order-modal" class="order-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Confirm Your Order</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <div class="order-summary">
+        <h4>Order Summary</h4>
+        <ul id="order-items-list"></ul>
+        <div class="order-total">
+          <span>Total:</span>
+          <span id="modal-total-amount">Rs. 0</span>
+        </div>
+      </div>
+      <div class="customer-info">
+        <label for="customer-name">Your Name:</label>
+        <input type="text" id="customer-name" placeholder="Enter your name" required>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="cancel-order" class="btn cancel-btn">Cancel</button>
+      <button id="confirm-order" class="btn confirm-btn">Place Order</button>
+    </div>
+  </div>
+</div>
+
+<!-- Order Success Modal -->
+<div id="success-modal" class="success-modal">
+  <div class="success-content">
+    <div class="success-icon">✓</div>
+    <h3>Order Placed Successfully!</h3>
+    <p id="success-message"></p>
+    <button id="success-ok" class="btn success-btn">OK</button>
+  </div>
+</div>
+  </div>
+</div>
+<!-- Clear Cart -->
+ <!-- Clear Cart Confirmation Modal -->
+<div id="clear-cart-modal" class="confirmation-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Clear Cart</h3>
+      <span class="close-modal">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to clear your cart?</p>
+      <p>All items will be removed permanently.</p>
+    </div>
+    <div class="modal-footer">
+      <button id="cancel-clear" class="btn cancel-btn">Cancel</button>
+      <button id="confirm-clear" class="btn confirm-btn">Clear Cart</button>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
   </body>
 </html>
