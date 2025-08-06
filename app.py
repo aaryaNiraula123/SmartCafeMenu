@@ -224,6 +224,10 @@ def not_found(error):
 def server_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
+
+@app.route('/order')
+def order():
+    return render_template('orders.html')
 # === APPLICATION ENTRY POINT ===
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
