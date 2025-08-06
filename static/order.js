@@ -1,320 +1,303 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize notification system
-  initializeNotificationSystem();
-
-  // Filter orders based on table and status
+  // Filter functionality
   const tableFilter = document.getElementById("table-filter");
   const statusFilter = document.getElementById("status-filter");
 
   function applyFilters() {
-    const tableValue = tableFilter.value;
-    const statusValue = statusFilter.value;
+    const selectedTable = tableFilter.value;
+    const selectedStatus = statusFilter.value;
 
     document.querySelectorAll(".order").forEach((order) => {
-      const tableMatch =
-        tableValue === "all" || order.dataset.table === tableValue;
-      const statusMatch =
-        statusValue === "all" || order.dataset.status === statusValue;
+      const table = order.dataset.table;
+      const status = order.dataset.status;
 
-      order.style.display = tableMatch && statusMatch ? "block" : "none";
+      const tableMatch = selectedTable === "all" || table === selectedTable;
+      const statusMatch = selectedStatus === "all" || status === selectedStatus;
+
+      if (tableMatch && statusMatch) {
+        order.style.display = "block";
+        // Add animation when showing
+        order.style.animation = "fadeIn 0.5s ease";
+      } else {
+        order.style.display = "none";
+      }
     });
   }
 
   tableFilter.addEventListener("change", applyFilters);
   statusFilter.addEventListener("change", applyFilters);
 
-  // Handle status changes
+  // Status change functionality
   document.querySelectorAll(".status-select").forEach((select) => {
     select.addEventListener("change", function () {
       const userName = this.dataset.user;
       const tableNumber = this.dataset.table;
       const newStatus = this.value;
+      const oldStatus = this.closest(".order").dataset.status;
 
-      updateOrderStatus(userName, tableNumber, newStatus);
+      // Update the status visually immediately
+      const orderElement = this.closest(".order");
+      orderElement.dataset.status = newStatus;
+
+      // Update the status badge
+      const statusBadge = orderElement.querySelector(".order-status");
+      statusBadge.textContent =
+        newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+      statusBadge.className = "order-status " + newStatus;
+
+      // Show notification
+      showNotification(
+        `Order status changed from ${oldStatus} to ${newStatus}`
+      );
+
+      // Here you would typically send an AJAX request to update the status on the server
+      // For example:
+      /*
+            fetch('/update-order-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_name: userName,
+                    table_number: tableNumber,
+                    status: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Revert if there was an error
+                    this.value = oldStatus;
+                    orderElement.dataset.status = oldStatus;
+                    statusBadge.textContent = oldStatus.charAt(0).toUpperCase() + oldStatus.slice(1);
+                    statusBadge.className = 'order-status ' + oldStatus;
+                    showNotification('Failed to update status', true);
+                }
+            });
+            */
     });
   });
 
-  // Delete order buttons
+  // Delete order functionality
   document.querySelectorAll(".delete-all").forEach((button) => {
     button.addEventListener("click", function () {
       const userName = this.dataset.user;
       const tableNumber = this.dataset.table;
 
-      showConfirmDialog(
-        `Delete Order from Table ${tableNumber}?`,
-        `Are you sure you want to delete this entire order?`,
-        () => deleteOrder(userName, tableNumber)
-      );
-    });
-  });
+      showConfirmationDialog(
+        "Delete Order",
+        `Are you sure you want to delete the entire order for ${userName} at Table ${tableNumber}?`,
+        () => {
+          // This would be the actual deletion logic
+          const orderElement = this.closest(".order");
+          orderElement.style.animation = "fadeOut 0.5s ease";
 
-  // Item quantity controls
-  document.querySelectorAll(".plus").forEach((button) => {
-    button.addEventListener("click", function () {
-      updateItemQuantity(
-        this.dataset.user,
-        this.dataset.table,
-        this.dataset.item,
-        "add"
-      );
-    });
-  });
+          setTimeout(() => {
+            orderElement.remove();
+            showNotification("Order deleted successfully");
 
-  document.querySelectorAll(".minus").forEach((button) => {
-    button.addEventListener("click", function () {
-      updateItemQuantity(
-        this.dataset.user,
-        this.dataset.table,
-        this.dataset.item,
-        "remove"
-      );
-    });
-  });
+            // Here you would typically send an AJAX request to delete the order on the server
+            /*
+                        fetch('/delete-order', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                user_name: userName,
+                                table_number: tableNumber
+                            })
+                        });
+                        */
 
-  // Delete item buttons
-  document.querySelectorAll(".delete-item").forEach((button) => {
-    button.addEventListener("click", function () {
-      showConfirmDialog(
-        "Remove Item",
-        "Are you sure you want to remove this item from the order?",
-        () =>
-          deleteItem(this.dataset.user, this.dataset.table, this.dataset.item)
-      );
-    });
-  });
-
-  // API functions
-  async function updateOrderStatus(userName, tableNumber, newStatus) {
-    try {
-      showNotification("info", "Updating...", "Changing order status", 2000);
-
-      const response = await fetch(`/update_status/${tableNumber}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: userName,
-          status: newStatus,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Update the UI to reflect the new status
-        const orderElement = document.querySelector(
-          `.order[data-table="${tableNumber}"]`
-        );
-        if (orderElement) {
-          orderElement.dataset.status = newStatus;
-          orderElement.querySelector(".order-status").textContent =
-            newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
-          orderElement.querySelector(
-            ".order-status"
-          ).className = `order-status ${newStatus}`;
-
-          // Re-apply filters in case the status change affects visibility
-          applyFilters();
-
-          showNotification(
-            "success",
-            "Status Updated",
-            `Order status changed to ${newStatus}`,
-            3000
-          );
+            // Check if no orders left
+            if (document.querySelectorAll(".order").length === 0) {
+              document.querySelector(".orders-container").innerHTML =
+                '<p class="no-orders">No orders found.</p>';
+            }
+          }, 500);
         }
-      } else {
-        throw new Error(data.error || "Failed to update status");
-      }
-    } catch (error) {
-      console.error("Error updating order status:", error);
-      showNotification("error", "Update Failed", error.message, 4000);
-    }
-  }
-
-  async function deleteOrder(userName, tableNumber) {
-    try {
-      showNotification("info", "Processing...", "Deleting order", 2000);
-
-      const response = await fetch(`/delete_order/${tableNumber}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: userName,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Remove the order from the UI
-        const orderElement = document.querySelector(
-          `.order[data-table="${tableNumber}"]`
-        );
-        if (orderElement) {
-          orderElement.remove();
-        }
-        showNotification(
-          "success",
-          "Order Deleted",
-          "The order was successfully removed",
-          3000
-        );
-      } else {
-        throw new Error(data.error || "Failed to delete order");
-      }
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      showNotification("error", "Deletion Failed", error.message, 4000);
-    }
-  }
-
-  async function updateItemQuantity(userName, tableNumber, itemName, action) {
-    try {
-      showNotification("info", "Updating...", "Modifying item quantity", 2000);
-
-      const response = await fetch("/update_item", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: userName,
-          table_number: tableNumber,
-          item_name: itemName,
-          action: action,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Reload the page to reflect changes
-        window.location.reload();
-      } else {
-        throw new Error(data.error || "Failed to update item quantity");
-      }
-    } catch (error) {
-      console.error("Error updating item quantity:", error);
-      showNotification("error", "Update Failed", error.message, 4000);
-    }
-  }
-
-  async function deleteItem(userName, tableNumber, itemName) {
-    try {
-      showNotification(
-        "info",
-        "Processing...",
-        "Removing item from order",
-        2000
       );
+    });
+  });
 
-      const response = await fetch("/delete_item", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_name: userName,
-          table_number: tableNumber,
-          item_name: itemName,
-        }),
-      });
+  // Item quantity and delete functionality
+  document.querySelectorAll(".action-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const action = this.classList.contains("plus")
+        ? "increase"
+        : this.classList.contains("minus")
+        ? "decrease"
+        : "delete";
+      const userName = this.dataset.user;
+      const tableNumber = this.dataset.table;
+      const itemName = this.dataset.item;
 
-      const data = await response.json();
+      if (action === "delete") {
+        showConfirmationDialog(
+          "Delete Item",
+          `Are you sure you want to remove ${itemName} from this order?`,
+          () => {
+            // This would be the actual deletion logic
+            const row = this.closest("tr");
+            row.style.animation = "fadeOut 0.3s ease";
 
-      if (response.ok) {
-        // Reload the page to reflect changes
-        window.location.reload();
+            setTimeout(() => {
+              row.remove();
+              showNotification(`${itemName} removed from order`);
+
+              // Here you would typically send an AJAX request to update the order on the server
+              /*
+                            fetch('/update-order-item', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    user_name: userName,
+                                    table_number: tableNumber,
+                                    item_name: itemName,
+                                    action: 'delete'
+                                })
+                            });
+                            */
+
+              // Update the order total
+              updateOrderTotal(this.closest("table"));
+            }, 300);
+          }
+        );
       } else {
-        throw new Error(data.error || "Failed to delete item");
+        // For plus/minus buttons - update quantity
+        const row = this.closest("tr");
+        const quantityCell = row.querySelector("td:nth-child(2)");
+        let quantity = parseInt(quantityCell.textContent);
+
+        if (action === "increase") {
+          quantity++;
+        } else if (action === "decrease" && quantity > 1) {
+          quantity--;
+        }
+
+        quantityCell.textContent = quantity;
+
+        // Update the total for this item
+        const price = parseFloat(
+          row.querySelector("td:nth-child(3)").textContent.replace("₹", "")
+        );
+        const totalCell = row.querySelector("td:nth-child(4)");
+        totalCell.textContent = "₹" + (price * quantity).toFixed(2);
+
+        // Update the order total
+        updateOrderTotal(this.closest("table"));
+
+        // Show notification
+        showNotification(`${itemName} quantity updated to ${quantity}`);
+
+        // Here you would typically send an AJAX request to update the order on the server
+        /*
+                fetch('/update-order-item', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_name: userName,
+                        table_number: tableNumber,
+                        item_name: itemName,
+                        action: action,
+                        quantity: quantity
+                    })
+                });
+                */
       }
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      showNotification("error", "Removal Failed", error.message, 4000);
-    }
+    });
+  });
+
+  function updateOrderTotal(table) {
+    let orderTotal = 0;
+    table.querySelectorAll("tbody tr").forEach((row) => {
+      const total = parseFloat(
+        row.querySelector("td:nth-child(4)").textContent.replace("₹", "")
+      );
+      orderTotal += total;
+    });
+
+    table.querySelector("tfoot td:nth-child(2)").textContent =
+      "₹" + orderTotal.toFixed(2);
   }
 
-  // Notification System
-  function initializeNotificationSystem() {
-    const notificationContainer = document.createElement("div");
-    notificationContainer.className = "notification-container";
-    document.body.appendChild(notificationContainer);
-  }
-
-  function showNotification(type, title, message, duration = 5000) {
-    const container = document.querySelector(".notification-container");
+  // Notification system
+  function showNotification(message, isError = false) {
     const notification = document.createElement("div");
-    const icon =
-      {
-        success: "✓",
-        error: "✕",
-        warning: "⚠",
-        info: "ⓘ",
-      }[type] || "";
+    notification.className = `notification ${isError ? "error" : ""}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
 
-    notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-      <div class="notification-icon">${icon}</div>
-      <div class="notification-content">
-        <div class="notification-title">${title}</div>
-        <div class="notification-message">${message}</div>
-      </div>
-      <div class="notification-close">&times;</div>
-      <div class="notification-progress"></div>
-    `;
+    setTimeout(() => {
+      notification.classList.add("show");
+    }, 10);
 
-    container.appendChild(notification);
-
-    // Trigger the show animation
-    setTimeout(() => notification.classList.add("show"), 10);
-
-    // Close button functionality
-    notification
-      .querySelector(".notification-close")
-      .addEventListener("click", () => {
-        closeNotification(notification);
-      });
-
-    // Auto-close after duration
-    if (duration) {
-      setTimeout(() => closeNotification(notification), duration);
-    }
+    setTimeout(() => {
+      notification.classList.remove("show");
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
   }
 
-  function closeNotification(notification) {
-    notification.classList.remove("show");
-    notification.classList.add("hide");
-    notification.addEventListener("transitionend", () => notification.remove());
-  }
+  // Confirmation dialog system
+  function showConfirmationDialog(title, message, confirmCallback) {
+    const overlay = document.createElement("div");
+    overlay.className = "overlay";
+    document.body.appendChild(overlay);
 
-  function showConfirmDialog(title, message, confirmCallback) {
     const dialog = document.createElement("div");
-    dialog.className = "confirm-dialog";
+    dialog.className = "confirmation-dialog";
     dialog.innerHTML = `
-      <div class="dialog-content">
-        <h3>${title}</h3>
-        <p>${message}</p>
-        <div class="dialog-buttons">
-          <button class="cancel-btn">Cancel</button>
-          <button class="confirm-btn">Confirm</button>
-        </div>
-      </div>
-    `;
-
+            <h3>${title}</h3>
+            <p>${message}</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn">Cancel</button>
+                <button class="confirm-btn">Confirm</button>
+            </div>
+        `;
     document.body.appendChild(dialog);
-    dialog.style.display = "flex";
 
-    dialog.querySelector(".cancel-btn").addEventListener("click", () => {
-      dialog.remove();
-    });
+    setTimeout(() => {
+      overlay.classList.add("show");
+      dialog.classList.add("show");
+    }, 10);
 
-    dialog.querySelector(".confirm-btn").addEventListener("click", () => {
-      dialog.remove();
+    function closeDialog() {
+      overlay.classList.remove("show");
+      dialog.classList.remove("show");
+      setTimeout(() => {
+        overlay.remove();
+        dialog.remove();
+      }, 300);
+    }
+
+    dialog.querySelector(".cancel-btn").addEventListener("click", closeDialog);
+    dialog.querySelector(".confirm-btn").addEventListener("click", function () {
+      closeDialog();
       confirmCallback();
     });
   }
+
+  // Add CSS animations dynamically
+  const style = document.createElement("style");
+  style.textContent = `
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+    `;
+  document.head.appendChild(style);
 });

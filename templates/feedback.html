@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback Form - BIC Cafe</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="text"],
+      input[type="email"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      textarea {
+        height: 120px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .rating {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .rating-option {
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Feedback Form</h1>
+      <form action="/submit-feedback" method="POST">
+        <div class="form-group">
+          <label for="name">Your Name:</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email (optional):</label>
+          <input type="email" id="email" name="email" />
+        </div>
+
+        <div class="form-group">
+          <label>Rating:</label>
+          <div class="rating">
+            <label class="rating-option"
+              ><input type="radio" name="rating" value="5" required /> 5
+              (Excellent)</label
+            >
+            <label class="rating-option"
+              ><input type="radio" name="rating" value="4" /> 4 (Good)</label
+            >
+            <label class="rating-option"
+              ><input type="radio" name="rating" value="3" /> 3 (Average)</label
+            >
+            <label class="rating-option"
+              ><input type="radio" name="rating" value="2" /> 2 (Poor)</label
+            >
+            <label class="rating-option"
+              ><input type="radio" name="rating" value="1" /> 1
+              (Terrible)</label
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="feedback">Your Feedback:</label>
+          <textarea id="feedback" name="feedback" required></textarea>
+        </div>
+
+        <button type="submit">Submit Feedback</button>
+      </form>
+    </div>
+  </body>
+</html>

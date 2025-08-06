@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "Do you have Wi-Fi for customers?":
       "📶 Yes, we offer free Wi-Fi for our customers. The network name is 'BIC' and the password is 'BICcollege123'.",
 
-    "How can I leave a review or feedback?":
-      "📝 We'd love to hear from you! Please leave your review or feedback using the link provided.",
+    "How can I provide feedback?":
+      "📝 We'd love to hear from you! Please share your feedback <a href='feedback.html' style='color: blue; text-decoration: underline;'>here</a>.",
   };
 
   // Toggle chatbot visibility
