@@ -7,6 +7,11 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='table.css') }}"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='bot.css') }}" />
     <title>Cafe Menu</title>
   </head>
   <body>
@@ -55,7 +60,7 @@
         <h3>Your Cart</h3>
         <ul id="cart-items"></ul>
         <p id="cart-total">Total: Rs. 0</p>
-        <button onclick="resetCart()" id="reset-btn">🗑️ Reset Card</button>
+        <button onclick="resetCart()" id="reset-btn">🗑️ Reset Cart</button>
         <button
           onclick="finalOrder()"
           id="final-order-btn"
@@ -344,6 +349,7 @@
         </div>
       </div>
 
+      <!-- Drinks Menu -->
       <div id="drinkcontents" class="tab-content">
         <!-- Hot Drinks Section -->
         <h2 class="drink-section-heading">Hot Drinks</h2>
@@ -660,86 +666,133 @@
         <div class="bot-message">Hello! How can I help you today?</div>
       </div>
       <div class="chatbot-options">
-        {% for question in [ "What's on the menu today?", "What are your opening
-        hours?", "Where is your cafe located?", "Can I reserve a table?", "Do
-        you offer vegetarian/vegan options?", "Do you provide home delivery or
-        takeout?", "What payment methods do you accept?", "Do you take custom
-        cake or event orders?", "Do you have Wi-Fi for customers?", "How can I
-        leave a review or feedback?" ] %}
-        <button class="chat-option" data-question="{{ question }}">
-          {{ question }}
+        <button class="chat-option" data-question="What's on the menu today?">
+          What's on the menu today?
         </button>
-        {% endfor %}
+        <button
+          class="chat-option"
+          data-question="What are your opening hours?"
+        >
+          What are your opening hours?
+        </button>
+        <button class="chat-option" data-question="Where is your cafe located?">
+          Where is your cafe located?
+        </button>
+        <button class="chat-option" data-question="Can I reserve a table?">
+          Can I reserve a table?
+        </button>
+        <button
+          class="chat-option"
+          data-question="Do you offer vegetarian/vegan options?"
+        >
+          Do you offer vegetarian/vegan options?
+        </button>
+        <button
+          class="chat-option"
+          data-question="Do you provide home delivery or takeout?"
+        >
+          Do you provide home delivery or takeout?
+        </button>
+        <button
+          class="chat-option"
+          data-question="What payment methods do you accept?"
+        >
+          What payment methods do you accept?
+        </button>
+        <button
+          class="chat-option"
+          data-question="Do you take custom cake or event orders?"
+        >
+          Do you take custom cake or event orders?
+        </button>
+        <button
+          class="chat-option"
+          data-question="Do you have Wi-Fi for customers?"
+        >
+          Do you have Wi-Fi for customers?
+        </button>
+        <button
+          class="chat-option"
+          data-question="How can I leave a review or feedback?"
+        >
+          How can I leave a review or feedback?
+        </button>
+      </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div id="order-modal" class="order-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Confirm Your Order</h3>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="order-summary">
+            <h4>Order Summary</h4>
+            <ul id="order-items-list"></ul>
+            <div class="order-total">
+              <span>Total:</span>
+              <span id="modal-total-amount">Rs. 0</span>
+            </div>
+          </div>
+          <div class="customer-info">
+            <label for="customer-name">Your Name:</label>
+            <input
+              type="text"
+              id="customer-name"
+              placeholder="Enter your name"
+              required
+            />
+
+            <label for="table-number">Table Number:</label>
+            <select id="table-number" required>
+              <option value="" disabled selected>Select your table</option>
+              <option value="1">Table 1</option>
+              <option value="2">Table 2</option>
+              <option value="3">Table 3</option>
+              <option value="4">Table 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-order" class="btn cancel-btn">Cancel</button>
+          <button id="confirm-order" class="btn confirm-btn">
+            Place Order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="success-modal" class="success-modal">
+      <div class="success-content">
+        <div class="success-icon">✓</div>
+        <h3>Order Placed Successfully!</h3>
+        <p id="success-message"></p>
+        <button id="success-ok" class="btn success-btn">OK</button>
+      </div>
+    </div>
+
+    <!-- Clear Cart Confirmation Modal -->
+    <div id="clear-cart-modal" class="confirmation-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Clear Cart</h3>
+          <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to clear your cart?</p>
+          <p>All items will be removed permanently.</p>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-clear" class="btn cancel-btn">Cancel</button>
+          <button id="confirm-clear" class="btn confirm-btn">Clear Cart</button>
+        </div>
       </div>
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-
-    <!-- In the head section -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='bot.css') }}" />
-
-    <!-- Before closing body tag -->
     <script src="{{ url_for('static', filename='bot.js') }}"></script>
-
-    <!-- Add this before the closing </body> tag -->
-<!-- Order Confirmation Modal -->
-<div id="order-modal" class="order-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Confirm Your Order</h3>
-      <span class="close-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      <div class="order-summary">
-        <h4>Order Summary</h4>
-        <ul id="order-items-list"></ul>
-        <div class="order-total">
-          <span>Total:</span>
-          <span id="modal-total-amount">Rs. 0</span>
-        </div>
-      </div>
-      <div class="customer-info">
-        <label for="customer-name">Your Name:</label>
-        <input type="text" id="customer-name" placeholder="Enter your name" required>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button id="cancel-order" class="btn cancel-btn">Cancel</button>
-      <button id="confirm-order" class="btn confirm-btn">Place Order</button>
-    </div>
-  </div>
-</div>
-
-<!-- Order Success Modal -->
-<div id="success-modal" class="success-modal">
-  <div class="success-content">
-    <div class="success-icon">✓</div>
-    <h3>Order Placed Successfully!</h3>
-    <p id="success-message"></p>
-    <button id="success-ok" class="btn success-btn">OK</button>
-  </div>
-</div>
-  </div>
-</div>
-<!-- Clear Cart -->
- <!-- Clear Cart Confirmation Modal -->
-<div id="clear-cart-modal" class="confirmation-modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Clear Cart</h3>
-      <span class="close-modal">&times;</span>
-    </div>
-    <div class="modal-body">
-      <p>Are you sure you want to clear your cart?</p>
-      <p>All items will be removed permanently.</p>
-    </div>
-    <div class="modal-footer">
-      <button id="cancel-clear" class="btn cancel-btn">Cancel</button>
-      <button id="confirm-clear" class="btn confirm-btn">Clear Cart</button>
-    </div>
-  </div>
-</div>
-  </div>
-</div>
   </body>
 </html>

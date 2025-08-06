@@ -1,27 +1,37 @@
 let cart = [];
+let currentTableNumber = 1; // Default table number
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Load saved cart from localStorage
-  const storedCart = localStorage.getItem("cart");
+  // Extract table number from URL (e.g., /menu/1)
+  const pathParts = window.location.pathname.split("/");
+  if (pathParts.length >= 3 && !isNaN(pathParts[2])) {
+    currentTableNumber = parseInt(pathParts[2]);
+  }
+
+  // Load saved cart from localStorage (table-specific)
+  const storedCart = localStorage.getItem(`cart_table_${currentTableNumber}`);
   if (storedCart) {
     cart = JSON.parse(storedCart);
     updateCart();
   }
-  showVegItems(); // default tab
 
-  // Initialize modal event listeners
+  showVegItems(); // default tab
   initModals();
 });
 
 // Initialize all modal related event listeners
 function initModals() {
   // Order confirmation modal
+  const orderModal = document.getElementById("order-modal");
+  const successModal = document.getElementById("success-modal");
+  const clearCartModal = document.getElementById("clear-cart-modal");
+
   document.querySelector(".close-modal")?.addEventListener("click", () => {
-    document.getElementById("order-modal").style.display = "none";
+    orderModal.style.display = "none";
   });
 
   document.getElementById("cancel-order")?.addEventListener("click", () => {
-    document.getElementById("order-modal").style.display = "none";
+    orderModal.style.display = "none";
   });
 
   document
@@ -30,31 +40,31 @@ function initModals() {
 
   // Success modal
   document.getElementById("success-ok")?.addEventListener("click", () => {
-    document.getElementById("success-modal").style.display = "none";
-    window.location.href = "/menu/1";
+    successModal.style.display = "none";
+    window.location.href = `/menu/${currentTableNumber}`;
   });
 
   // Clear cart modal
   document.getElementById("cancel-clear")?.addEventListener("click", () => {
-    document.getElementById("clear-cart-modal").style.display = "none";
+    clearCartModal.style.display = "none";
   });
 
   document.getElementById("confirm-clear")?.addEventListener("click", () => {
     performCartReset();
-    document.getElementById("clear-cart-modal").style.display = "none";
+    clearCartModal.style.display = "none";
   });
 
   // Close modals when clicking outside
   window.addEventListener("click", (event) => {
-    if (event.target == document.getElementById("order-modal")) {
-      document.getElementById("order-modal").style.display = "none";
+    if (event.target === orderModal) {
+      orderModal.style.display = "none";
     }
-    if (event.target == document.getElementById("success-modal")) {
-      document.getElementById("success-modal").style.display = "none";
-      window.location.href = "/menu/1";
+    if (event.target === successModal) {
+      successModal.style.display = "none";
+      window.location.href = `/menu/${currentTableNumber}`;
     }
-    if (event.target == document.getElementById("clear-cart-modal")) {
-      document.getElementById("clear-cart-modal").style.display = "none";
+    if (event.target === clearCartModal) {
+      clearCartModal.style.display = "none";
     }
   });
 }
@@ -66,10 +76,8 @@ function addToCart(itemName, itemPrice) {
   } else {
     cart.push({ name: itemName, price: itemPrice, quantity: 1 });
   }
-  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartStorage();
   updateCart();
-
-  // Show add to cart animation
   showCartAnimation(itemName);
 }
 
@@ -133,7 +141,7 @@ function decreaseQuantity(e) {
     cart = cart.filter((item) => item.name !== itemName);
   }
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartStorage();
   updateCart();
 }
 
@@ -142,7 +150,7 @@ function increaseQuantity(e) {
   const item = cart.find((item) => item.name === itemName);
   item.quantity++;
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartStorage();
   updateCart();
 }
 
@@ -150,8 +158,15 @@ function removeItem(e) {
   const itemName = e.target.dataset.name;
   cart = cart.filter((item) => item.name !== itemName);
 
-  localStorage.setItem("cart", JSON.stringify(cart));
+  updateCartStorage();
   updateCart();
+}
+
+function updateCartStorage() {
+  localStorage.setItem(
+    `cart_table_${currentTableNumber}`,
+    JSON.stringify(cart)
+  );
 }
 
 function resetCart() {
@@ -159,17 +174,14 @@ function resetCart() {
     showEmptyCartNotification();
     return;
   }
-
-  // Show clear cart confirmation modal
   document.getElementById("clear-cart-modal").style.display = "block";
 }
 
 function performCartReset() {
   cart = [];
-  localStorage.removeItem("cart");
+  localStorage.removeItem(`cart_table_${currentTableNumber}`);
   updateCart();
 
-  // Show reset notification
   const notification = document.createElement("div");
   notification.className = "cart-notification reset";
   notification.textContent = "Cart has been cleared!";
@@ -186,9 +198,34 @@ function finalOrder() {
     showEmptyCartNotification();
     return;
   }
-
-  // Show order confirmation modal
   showOrderConfirmation();
+}
+
+function showOrderConfirmation() {
+  const orderItemsList = document.getElementById("order-items-list");
+  const modalTotalAmount = document.getElementById("modal-total-amount");
+
+  // Clear previous items
+  orderItemsList.innerHTML = "";
+
+  // Add current items
+  cart.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} x${item.quantity} - Rs. ${
+      item.price * item.quantity
+    }`;
+    orderItemsList.appendChild(li);
+  });
+
+  // Calculate and display total
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  modalTotalAmount.textContent = `Rs. ${total}`;
+
+  // Set the table number in the modal
+  document.getElementById("table-number").value = currentTableNumber;
+
+  // Show the modal
+  document.getElementById("order-modal").style.display = "block";
 }
 
 function showEmptyCartNotification() {
@@ -203,81 +240,69 @@ function showEmptyCartNotification() {
   }, 2000);
 }
 
-function showOrderConfirmation() {
-  const modal = document.getElementById("order-modal");
-  const orderItemsList = document.getElementById("order-items-list");
-  const modalTotalAmount = document.getElementById("modal-total-amount");
-
-  // Clear previous items
-  orderItemsList.innerHTML = "";
-
-  // Add current items
-  let total = 0;
-  cart.forEach((item) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <span class="item-name">${item.name}</span>
-      <span class="item-quantity">x${item.quantity}</span>
-      <span class="item-price">Rs. ${item.price * item.quantity}</span>
-    `;
-    orderItemsList.appendChild(li);
-    total += item.price * item.quantity;
-  });
-
-  // Update total
-  modalTotalAmount.textContent = `Rs. ${total}`;
-
-  // Clear name field
-  document.getElementById("customer-name").value = "";
-
-  // Show modal
-  modal.style.display = "block";
-}
-
 function confirmOrder() {
-  const customerName = document.getElementById("customer-name").value.trim();
+  try {
+    const customerName = document.getElementById("customer-name").value.trim();
+    const tableNumber = document.getElementById("table-number").value;
 
-  if (!customerName) {
-    alert("Please enter your name to confirm the order.");
-    return;
-  }
+    if (!customerName) {
+      alert("Please enter your name to confirm the order.");
+      return;
+    }
 
-  // Prepare data
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const orderData = {
-    user_name: customerName,
-    items: cart,
-    total: total,
-  };
+    if (!tableNumber) {
+      alert("Please select your table number.");
+      return;
+    }
 
-  // Send to server
-  fetch("/checkout", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(orderData),
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      // Hide order modal
-      document.getElementById("order-modal").style.display = "none";
+    const total = cart.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    const orderData = {
+      user_name: customerName,
+      table_number: parseInt(tableNumber),
+      items: cart,
+      total: total,
+    };
 
-      // Show success modal
-      document.getElementById(
-        "success-message"
-      ).textContent = `Thank you, ${customerName}! Your order of Rs. ${total} has been placed successfully.`;
-      document.getElementById("success-modal").style.display = "block";
+    console.log("Order data being sent:", orderData);
 
-      // Clear cart
-      cart = [];
-      localStorage.removeItem("cart");
-      updateCart();
+    fetch("/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(orderData),
     })
-    .catch((error) => {
-      alert("Error submitting order, please try again.");
-      console.error("Order error:", error);
-    });
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((err) => {
+            throw new Error(err.error || "Server error");
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Order success:", data);
+        cart = [];
+        localStorage.removeItem(`cart_table_${tableNumber}`);
+        updateCart();
+
+        document.getElementById("order-modal").style.display = "none";
+        document.getElementById(
+          "success-message"
+        ).textContent = `Thank you, ${customerName}! Your order for Table ${tableNumber} (Rs. ${total}) has been placed.`;
+        document.getElementById("success-modal").style.display = "block";
+      })
+      .catch((error) => {
+        console.error("Order submission failed:", error);
+        alert(`Order failed: ${error.message}`);
+      });
+  } catch (error) {
+    console.error("Error in confirmOrder:", error);
+    alert("An unexpected error occurred. Please try again.");
+  }
 }
 
 // Tab display functions
@@ -285,11 +310,9 @@ function showTab(tabId) {
   const contents = document.querySelectorAll(".tab-content");
   const tabs = document.querySelectorAll(".tab");
 
-  // Hide all contents and remove active class from tabs
   contents.forEach((content) => (content.style.display = "none"));
   tabs.forEach((tab) => tab.classList.remove("active"));
 
-  // Show selected content and mark tab as active
   const activeContent = document.getElementById(tabId);
   const activeTab = document.querySelector(`.tab[onclick*="${tabId}"]`);
 
@@ -329,7 +352,6 @@ function searchMenu() {
     if (isVisible) hasResults = true;
   });
 
-  // Show/hide no results message
   if (noResults) {
     noResults.style.display = hasResults ? "none" : "block";
   }
@@ -373,7 +395,6 @@ function filterMenu() {
     });
   }
 
-  // Reattach sorted cards
   grid.innerHTML = "";
   sortedCards.forEach((card) => grid.appendChild(card));
 }
