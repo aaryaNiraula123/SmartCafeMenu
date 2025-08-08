@@ -1,0 +1,87 @@
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+  user-select: none;
+}
+
+.logo-wrapper {
+  display: inline-block; /* shrink-wrap to image size */
+  border-radius: 14px;
+  animation: glowPulse 3.5s infinite ease-in-out;
+  filter: drop-shadow(0 0 10px rgba(111, 143, 114, 0.5));
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.logo-wrapper:hover {
+  cursor: pointer;
+  filter: drop-shadow(0 0 28px rgba(111, 143, 114, 0.9));
+  transform: scale(1.08);
+}
+
+/* Animate glow and subtle scale on wrapper only */
+@keyframes glowPulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(111, 143, 114, 0.5));
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(111, 143, 114, 0.85));
+    transform: scale(1.06);
+  }
+}
+
+.logo {
+  width: 70px; /* fixed width */
+  height: auto; /* maintain aspect ratio */
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0 4px 15px rgba(111, 143, 114, 0.25);
+  user-select: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.logo-wrapper:hover .logo {
+  box-shadow: 0 6px 25px rgba(111, 143, 114, 0.45);
+}
+
+.header h1 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #6f8f72;
+  font-weight: 700;
+  font-size: 2.1rem;
+  margin-top: 15px;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 6px rgba(111, 143, 114, 0.3);
+  user-select: none;
+}
+
+/* Bot popup animations */
+@keyframes pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+}
+
+.chatbot-btn {
+  animation: none !important;
+  transition: transform 0.3s ease;
+}
+
+.chatbot-btn:hover {
+  transform: scale(1.05);
+}
+
+.chatbot-btn > #chatbot-icon {
+  cursor: pointer;
+  animation: pop 1.2s infinite ease-in-out;
+  transition: filter 0.3s ease;
+}
+
+.chatbot-btn > #chatbot-icon:hover {
+  filter: drop-shadow(0 0 10px #6f8f72);
+}

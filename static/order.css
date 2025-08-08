@@ -357,3 +357,77 @@ th {
   opacity: 1;
   pointer-events: all;
 }
+
+.logout-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  background-color: #bc3232;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: #f80000;
+}
+
+/* for login logut panel */
+/* Add these to your existing order.css */
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #2c3e50;
+    color: white;
+}
+
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.login-btn, .logout-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.login-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.login-btn:hover {
+    background-color: #2980b9;
+}
+
+.logout-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+.login-required {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+}
+
+.login-required .login-btn {
+    display: inline-block;
+    margin-top: 1rem;
+}

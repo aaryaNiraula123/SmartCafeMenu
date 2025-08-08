@@ -1,0 +1,515 @@
+/* CSS Variables for colors, shadows, easing */
+:root {
+  --color-primary-start: #5a8d7b;
+  --color-primary-end: #6b9e8a;
+  --color-primary-dark: #4a7c6b;
+  --color-accent: #ffd700;
+  --color-error: #e53e3e;
+  --color-bg-light: #e8f4ea;
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-input-bg: rgba(248, 250, 249, 0.9);
+  --color-input-border: #d1e0db;
+  --color-shadow-light: rgba(90, 141, 123, 0.25);
+  --color-shadow-medium: rgba(90, 141, 123, 0.3);
+  --color-shadow-strong: rgba(90, 141, 123, 0.4);
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-special: cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+/* Reset & Base */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  outline-offset: 2px;
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start) 0%,
+    var(--color-bg-light) 100%
+  );
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Container */
+.container {
+  background: rgba(255, 255, 255, 0.98);
+  padding: 40px 50px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 15px 35px var(--color-shadow-light),
+    0 5px 15px rgba(90, 141, 123, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transition: all 0.4s var(--ease-special);
+  overflow: hidden;
+  position: relative;
+  will-change: transform;
+}
+
+.container::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  transform: rotate(30deg);
+  pointer-events: none;
+}
+
+.container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px var(--color-shadow-medium),
+    0 10px 20px rgba(90, 141, 123, 0.2);
+}
+
+.container:focus-within {
+  box-shadow: 0 0 0 4px rgba(90, 141, 123, 0.2),
+    0 25px 50px var(--color-shadow-medium);
+}
+
+/* Accessibility: focus-visible */
+.container:focus-within:not(:focus-visible) {
+  box-shadow: none;
+}
+
+/* Header */
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.logo-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 4px rgba(90, 141, 123, 0.1),
+    0 0 30px rgba(90, 141, 123, 0.3);
+  animation: logoFloat 4s ease-in-out infinite;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  z-index: 2;
+  will-change: transform, box-shadow;
+}
+
+.logo-img:hover,
+.logo-img:focus-visible {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 0 0 6px rgba(90, 141, 123, 0.2),
+    0 0 40px rgba(90, 141, 123, 0.4);
+  outline: none;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.4rem;
+  color: var(--color-primary-dark);
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: inline-block;
+}
+
+h1::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary-start),
+    transparent
+  );
+  border-radius: 2px;
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--color-text-primary);
+  font-size: 1.05rem;
+  transition: color 0.3s ease;
+}
+
+label span {
+  color: var(--color-error);
+  margin-left: 4px;
+}
+
+input,
+textarea {
+  background: var(--color-input-bg);
+  border: 2px solid var(--color-input-border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  outline-offset: 3px;
+  outline-color: transparent;
+  transition: border-color 0.3s var(--ease-default),
+    box-shadow 0.3s var(--ease-default), background 0.3s var(--ease-default),
+    transform 0.3s var(--ease-default);
+  font-weight: 500;
+  resize: vertical;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  will-change: transform, box-shadow;
+  background-image: linear-gradient(to bottom, #fefefe, #e6f0e8);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a0aec0;
+  font-weight: 400;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--color-primary-start);
+  box-shadow: 0 0 0 4px rgba(90, 141, 123, 0.2),
+    inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: #ffffff;
+  transform: translateY(-2px);
+  outline-color: var(--color-primary-start);
+}
+
+/* Rating Stars */
+.rating-group {
+  margin: 10px 0;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.stars input[type="radio"] {
+  display: none;
+}
+
+.stars label {
+  color: #d8e6e0;
+  cursor: pointer;
+  transition: color 0.3s var(--ease-default), transform 0.3s var(--ease-default),
+    text-shadow 0.3s var(--ease-default);
+  position: relative;
+  will-change: color, transform;
+}
+
+.stars label::before {
+  content: "★";
+  display: inline-block;
+}
+
+/* Change hover logic for better UX */
+/* Highlight stars on hover and those before it */
+.stars label:hover,
+.stars label:hover ~ label {
+  color: var(--color-accent);
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  transform: scale(1.3) rotate(10deg);
+}
+
+.stars label:hover {
+  transform: scale(1.4) rotate(15deg);
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+/* Checked stars - important to have priority */
+.stars input[type="radio"]:checked ~ label {
+  color: var(--color-accent);
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+  transform: scale(1.3) rotate(10deg);
+}
+
+/* Submit Button */
+.btn-submit {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start) 0%,
+    var(--color-primary-end) 100%
+  );
+  color: white;
+  font-weight: 600;
+  padding: 18px 0;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background 0.4s var(--ease-default),
+    box-shadow 0.4s var(--ease-default), transform 0.4s var(--ease-default);
+  box-shadow: 0 4px 15px var(--color-shadow-strong),
+    0 2px 4px rgba(0, 0, 0, 0.05);
+  letter-spacing: 0.8px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 10px;
+  will-change: transform, box-shadow;
+}
+
+.btn-submit::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-dark) 0%,
+    var(--color-primary-start) 100%
+  );
+  box-shadow: 0 8px 25px var(--color-shadow-strong),
+    0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+.btn-submit:hover::before {
+  left: 100%;
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px var(--color-shadow-strong),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Thank You UI */
+.thank-you-container {
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.thank-you-container.animate-in {
+  opacity: 1;
+  height: auto;
+  margin-top: 30px;
+}
+
+.thank-you-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  transform: scale(0.9);
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+
+.thank-you-container.animate-in .thank-you-card {
+  transform: scale(1);
+}
+
+.thank-you-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start) 0%,
+    #8fc1a9 100%
+  );
+  color: white;
+  border-radius: 50%;
+  font-size: 40px;
+  box-shadow: 0 10px 20px var(--color-shadow-medium);
+  animation: bounce 0.8s ease-in-out, pulse 2s ease-in-out infinite;
+  will-change: transform;
+}
+
+.thank-you-title {
+  font-size: 2rem;
+  color: var(--color-primary-dark);
+  margin: 20px 0 10px;
+  font-weight: 700;
+}
+
+.thank-you-text {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  margin: 15px 0;
+  line-height: 1.7;
+}
+
+/* Thank You Buttons */
+.thank-you-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.thank-you-button {
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-default);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border: none;
+  min-width: 140px;
+}
+
+.menu-button {
+  background: white;
+  color: var(--color-primary-dark);
+  border: 2px solid var(--color-input-border);
+}
+
+.menu-button:hover,
+.menu-button:focus-visible {
+  background: #f8faf9;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+.submit-button {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-start) 0%,
+    var(--color-primary-end) 100%
+  );
+  color: white;
+}
+
+.submit-button:hover,
+.submit-button:focus-visible {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-dark) 0%,
+    var(--color-primary-start) 100%
+  );
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px var(--color-shadow-strong);
+  outline: none;
+}
+
+/* Animations */
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+    box-shadow: 0 0 0 4px rgba(90, 141, 123, 0.1),
+      0 0 30px rgba(90, 141, 123, 0.3);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+    box-shadow: 0 0 0 6px rgba(90, 141, 123, 0.2),
+      0 0 40px rgba(90, 141, 123, 0.4);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .container {
+    padding: 30px;
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .thank-you-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .thank-you-button {
+    width: 100%;
+  }
+}

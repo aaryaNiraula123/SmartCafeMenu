@@ -2,115 +2,116 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Feedback Form - BIC Cafe</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        background-color: #f5f5f5;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #333;
-        text-align: center;
-      }
-      .form-group {
-        margin-bottom: 15px;
-      }
-      label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-      }
-      input[type="text"],
-      input[type="email"],
-      textarea,
-      select {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-      }
-      textarea {
-        height: 120px;
-      }
-      button {
-        background-color: #4caf50;
-        color: white;
-        padding: 10px 15px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      .rating {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-      }
-      .rating-option {
-        text-align: center;
-      }
-    </style>
-  </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feedback Form</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='feedback.css') }}"
+    />
+    <script
+      defer
+      src="{{ url_for('static', filename='feedback.js') }}"
+    ></script>
+   
   <body>
-    <div class="container">
-      <h1>Feedback Form</h1>
-      <form action="/submit-feedback" method="POST">
+    <main class="container" role="main" aria-label="Feedback Form">
+      <header>
+        <div class="logo">
+          <img
+            src="{{ url_for('static', filename='images/bic.jpeg') }}"
+            alt="Company Logo"
+            class="logo-img"
+            loading="lazy"
+            width="70"
+            height="70"
+            aria-hidden="true"
+          />
+          <h1>We value your feedback</h1>
+        </div>
+      </header>
+
+      <form
+        id="feedbackForm"
+        action="/submit_feedback"
+        method="POST"
+        novalidate
+      >
         <div class="form-group">
-          <label for="name">Your Name:</label>
-          <input type="text" id="name" name="name" required />
+          <label for="name">Name <span aria-hidden="true">*</span></label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Your full name"
+            required
+            autocomplete="name"
+            aria-describedby="nameError"
+          />
+          <p id="nameError" class="error-message">Please enter your name.</p>
         </div>
 
         <div class="form-group">
-          <label for="email">Email (optional):</label>
-          <input type="email" id="email" name="email" />
+          <label for="email">Email <span aria-hidden="true">*</span></label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+            aria-describedby="emailError"
+          />
+          <p id="emailError" class="error-message">
+            Please enter a valid email.
+          </p>
         </div>
 
         <div class="form-group">
-          <label>Rating:</label>
-          <div class="rating">
-            <label class="rating-option"
-              ><input type="radio" name="rating" value="5" required /> 5
-              (Excellent)</label
-            >
-            <label class="rating-option"
-              ><input type="radio" name="rating" value="4" /> 4 (Good)</label
-            >
-            <label class="rating-option"
-              ><input type="radio" name="rating" value="3" /> 3 (Average)</label
-            >
-            <label class="rating-option"
-              ><input type="radio" name="rating" value="2" /> 2 (Poor)</label
-            >
-            <label class="rating-option"
-              ><input type="radio" name="rating" value="1" /> 1
-              (Terrible)</label
-            >
-          </div>
+          <label for="rating">Rating <span aria-hidden="true">*</span></label>
+          <fieldset
+            class="rating-group"
+            aria-describedby="ratingError"
+            role="radiogroup"
+            aria-labelledby="ratingLabel"
+          >
+            <legend id="ratingLabel" class="sr-only">
+              Rate your experience
+            </legend>
+            <div class="stars">
+              <input type="radio" id="star5" name="rating" value="5" required />
+              <label for="star5" title="Excellent">★</label>
+
+              <input type="radio" id="star4" name="rating" value="4" />
+              <label for="star4" title="Good">★</label>
+
+              <input type="radio" id="star3" name="rating" value="3" />
+              <label for="star3" title="Average">★</label>
+
+              <input type="radio" id="star2" name="rating" value="2" />
+              <label for="star2" title="Poor">★</label>
+
+              <input type="radio" id="star1" name="rating" value="1" />
+              <label for="star1" title="Terrible">★</label>
+            </div>
+          </fieldset>
+          <p id="ratingError" class="error-message">Please select a rating.</p>
         </div>
 
         <div class="form-group">
-          <label for="feedback">Your Feedback:</label>
-          <textarea id="feedback" name="feedback" required></textarea>
+          <label for="comments">Comments</label>
+          <textarea
+            id="comments"
+            name="comments"
+            placeholder="Write your feedback here..."
+            rows="5"
+            autocomplete="off"
+          ></textarea>
         </div>
 
-        <button type="submit">Submit Feedback</button>
+        <button type="submit" class="btn-submit" aria-label="Submit feedback">
+          Send Feedback
+        </button>
       </form>
-    </div>
+    </main>
   </body>
 </html>

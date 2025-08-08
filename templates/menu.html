@@ -12,16 +12,22 @@
       href="{{ url_for('static', filename='table.css') }}"
     />
     <link rel="stylesheet" href="{{ url_for('static', filename='bot.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='glow.css') }}"
+    />
     <title>Cafe Menu</title>
   </head>
   <body>
     <!-- Header Section -->
     <div class="header">
-      <img
-        src="{{ url_for('static', filename='images/bic.jpeg') }}"
-        alt="Cafe Logo"
-        class="logo"
-      />
+      <div class="logo-wrapper">
+        <img
+          src="{{ url_for('static', filename='images/bic.jpeg') }}"
+          alt="Cafe Logo"
+          class="logo"
+        />
+      </div>
       <h1>WELCOME TO OUR SMART CAFÉ☕</h1>
     </div>
 
@@ -657,7 +663,8 @@
       />
     </div>
 
-    <div class="chatbot-container" id="chatbot-container">
+    <!-- Chat Bot Code -->
+    <div class="chatbot-container" id="chatbot-container" style="display: none">
       <div class="chatbot-header">
         <h3>Cafe Assistant</h3>
         <button id="close-chatbot">×</button>
@@ -665,60 +672,13 @@
       <div class="chatbot-messages" id="chatbot-messages">
         <div class="bot-message">Hello! How can I help you today?</div>
       </div>
-      <div class="chatbot-options">
-        <button class="chat-option" data-question="What's on the menu today?">
-          What's on the menu today?
-        </button>
-        <button
-          class="chat-option"
-          data-question="What are your opening hours?"
-        >
-          What are your opening hours?
-        </button>
-        <button class="chat-option" data-question="Where is your cafe located?">
-          Where is your cafe located?
-        </button>
-        <button class="chat-option" data-question="Can I reserve a table?">
-          Can I reserve a table?
-        </button>
-        <button
-          class="chat-option"
-          data-question="Do you offer vegetarian/vegan options?"
-        >
-          Do you offer vegetarian/vegan options?
-        </button>
-        <button
-          class="chat-option"
-          data-question="Do you provide home delivery or takeout?"
-        >
-          Do you provide home delivery or takeout?
-        </button>
-        <button
-          class="chat-option"
-          data-question="What payment methods do you accept?"
-        >
-          What payment methods do you accept?
-        </button>
-        <button
-          class="chat-option"
-          data-question="Do you take custom cake or event orders?"
-        >
-          Do you take custom cake or event orders?
-        </button>
-        <button
-          class="chat-option"
-          data-question="Do you have Wi-Fi for customers?"
-        >
-          Do you have Wi-Fi for customers?
-        </button>
-        <button
-          class="chat-option"
-          data-question="How can I leave a review or feedback?"
-        >
-          How can I provide feedback?
-        </button>
+      <div class="chatbot-options" id="chatbot-options">
+        <!-- Buttons will be added here dynamically -->
       </div>
     </div>
+
+    <!-- Add your chatbot icon somewhere on page, e.g.: -->
+    <button id="chatbot-icon">Chat</button>
 
     <!-- Order Confirmation Modal -->
     <div id="order-modal" class="order-modal">
