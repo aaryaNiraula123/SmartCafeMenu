@@ -1,107 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <title>Admin - Orders</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='order.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='order.css') }}">
 </head>
 <body>
-    <h1>Admin Panel - Orders</h1>
-    
-    <!-- Add filter by table number -->
-    <div class="filters">
-        <label for="table-filter">Filter by Table:</label>
-        <select id="table-filter">
-            <option value="all">All Tables</option>
-            <option value="1">Table 1</option>
-            <option value="2">Table 2</option>
-            <option value="3">Table 3</option>
-            <option value="4">Table 4</option>
-        </select>
-        
-        <label for="status-filter">Filter by Status:</label>
-        <select id="status-filter">
-            <option value="all">All Status</option>
-            <option value="pending">Pending</option>
-            <option value="preparing">Preparing</option>
-            <option value="ready">Ready to Serve</option>
-            <option value="delivered">Delivered</option>
-        </select>
-    </div>
-
-    {% if orders %}
-    <div class="orders-container">
-        {% for order in orders %}
-        <div class="order" data-table="{{ order.table_number }}" data-status="{{ order.status }}">
-            <div class="order-header">
-                <h3>
-                    Table {{ order.table_number }} - {{ order.user_name }}
-                    <span class="order-status {{ order.status }}">
-                        {{ order.status|capitalize }}
-                    </span>
-                </h3>
-                <div class="order-actions">
-                    <select class="status-select" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}">
-                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
-                        <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
-                        <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready</option>
-                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
-                    </select>
-                    <button class="delete-all" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}">
-                        🗑 Delete Order
-                    </button>
-                </div>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Price (₹)</th>
-                        <th>Total (₹)</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% set ns = namespace(user_total=0) %}
-                    {% for item in order["items"] %}
-                    {% set item_total = item.price|int * item.quantity|int %}
-                    {% set ns.user_total = ns.user_total + item_total %}
-                    <tr>
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>₹{{ item.price }}</td>
-                        <td>₹{{ item_total }}</td>
-                        <td>
-                            <button class="action-btn plus" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">
-                                ➕
-                            </button>
-                            <button class="action-btn minus" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">
-                                ➖
-                            </button>
-                            <button class="action-btn delete-item" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">
-                                ❌
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3"><strong>Order Total</strong></td>
-                        <td><strong>₹{{ ns.user_total }}</strong></td>
-                        <td></td>
-                    </tr>
-                </tfoot>
-            </table>
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <div id="login-error" class="error-message">Invalid username or password</div>
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button id="login-btn">Login</button>
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <p class="no-orders">No orders found.</p>
-    {% endif %}
 
+    <!-- Logout Confirmation -->
+    <div id="logout-confirm" class="logout-confirm">
+        <div class="logout-confirm-box">
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to logout?</p>
+            <div class="logout-confirm-buttons">
+                <button id="logout-cancel" class="logout-cancel">Cancel</button>
+                <button id="logout-proceed" class="logout-proceed">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="main-content">
+        <button id="logout-btn" class="logout-btn">Logout</button>
+        
+        <h1>Admin Panel - Orders</h1>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <label for="table-filter">Filter by Table:</label>
+            <select id="table-filter">
+                <option value="all">All Tables</option>
+                <option value="1">Table 1</option>
+                <option value="2">Table 2</option>
+                <option value="3">Table 3</option>
+                <option value="4">Table 4</option>
+            </select>
+
+            <label for="status-filter">Filter by Status:</label>
+            <select id="status-filter">
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="preparing">Preparing</option>
+                <option value="ready">Ready to Serve</option>
+                <option value="delivered">Delivered</option>
+            </select>
+        </div>
+
+        <!-- Orders Section -->
+        {% if orders %}
+        <div class="orders-container">
+            {% for order in orders %}
+            <div class="order" data-table="{{ order.table_number }}" data-status="{{ order.status }}">
+                <div class="order-header">
+                    <h3>
+                        Table {{ order.table_number }} - {{ order.user_name }}
+                        <span class="order-status {{ order.status }}">
+                            {{ order.status|capitalize }}
+                        </span>
+                    </h3>
+                    <div class="order-actions">
+                        <select class="status-select" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}">
+                            <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pending</option>
+                            <option value="preparing" {% if order.status == 'preparing' %}selected{% endif %}>Preparing</option>
+                            <option value="ready" {% if order.status == 'ready' %}selected{% endif %}>Ready</option>
+                            <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                        </select>
+                        <button class="delete-all" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}">
+                            🗑 Delete Order
+                        </button>
+                    </div>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price (रु)</th>
+                            <th>Total (रु)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set ns = namespace(user_total=0) %}
+                        {% for item in order["items"] %}
+                        {% set item_total = item.price|int * item.quantity|int %}
+                        {% set ns.user_total = ns.user_total + item_total %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>रु{{ item.price }}</td>
+                            <td>रु{{ item_total }}</td>
+                            <td>
+                                <button class="action-btn plus" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">➕</button>
+                                <button class="action-btn minus" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">➖</button>
+                                <button class="action-btn delete-item" data-user="{{ order.user_name }}" data-table="{{ order.table_number }}" data-item="{{ item.name }}">❌</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3"><strong>Order Total</strong></td>
+                            <td><strong>रु{{ ns.user_total }}</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-orders">No orders found.</p>
+        {% endif %}
+
+        <!-- Chart Section -->
+        <div class="chart-container" style="width: 600px; margin: 30px auto;">
+            <canvas id="ordersChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ url_for('static', filename='order.js') }}"></script>
 </body>
 </html>
