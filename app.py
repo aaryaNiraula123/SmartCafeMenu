@@ -3,17 +3,15 @@ import json
 from datetime import datetime
 from flask import Flask, render_template, redirect, request, jsonify, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS  # Added for CORS support
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all domains, useful if frontend is separate
 
 # === CONFIGURATION ===
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///feedback_orders.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# === DATABASE MODELS ===
+# === MODELS ===
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(100), nullable=False)
@@ -24,7 +22,7 @@ class Order(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def __repr__(self):
-        return f"<Order {self.id} for Table {self.table_number}>"
+        return f"<Order {self.id} table {self.table_number}>"
 
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,21 +35,30 @@ class Feedback(db.Model):
     def __repr__(self):
         return f"<Feedback {self.id} from {self.name}>"
 
-# Create tables if not exist
 with app.app_context():
     db.create_all()
 
-# === ROUTES ===
+# === PAGES ===
 @app.route('/')
 def home():
-    return redirect('/menu/1')
+    return redirect(url_for('menu', table_id=1))
 
 @app.route('/menu/<int:table_id>')
 def menu(table_id):
-    if table_id < 1 or table_id > 4:
-        return redirect('/menu/1')
+    if table_id < 1 or table_id > 10:
+        table_id = 1
     return render_template('menu.html', table_id=table_id)
 
+@app.route('/admin')
+def admin_panel():
+    return render_template('admin.html')
+
+@app.route('/orders')
+def view_orders_page():
+    # Optionally pass orders to template; admin has dedicated API/JS
+    return render_template('orders.html')
+
+# === API ===
 @app.route('/checkout', methods=['POST'])
 def checkout():
     try:
@@ -59,14 +66,10 @@ def checkout():
         if not data or 'user_name' not in data or 'table_number' not in data or 'items' not in data:
             return jsonify({'error': 'Missing required fields'}), 400
 
-        try:
-            items_json = json.dumps(data['items'])
-        except (TypeError, ValueError):
-            return jsonify({'error': 'Invalid items format'}), 400
-
+        items_json = json.dumps(data['items'])
         new_order = Order(
             user_name=data['user_name'],
-            table_number=data['table_number'],
+            table_number=int(data['table_number']),
             items=items_json,
             status='pending'
         )
@@ -78,190 +81,50 @@ def checkout():
             'order_id': new_order.id,
             'table_number': new_order.table_number
         }), 201
-
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 
-@app.route('/orders')
-def view_orders():
-    table_filter = request.args.get('table', 'all')
-    status_filter = request.args.get('status', 'all')
-
-    query = Order.query.order_by(Order.created_at.desc())
-
-    if table_filter != 'all':
+@app.route('/api/orders', methods=['GET'])
+def api_orders():
+    # Return all orders as JSON (for admin)
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    out = []
+    for o in orders:
         try:
-            table_num = int(table_filter)
-            query = query.filter(Order.table_number == table_num)
-        except ValueError:
-            pass  # ignore invalid table filter
-
-    if status_filter != 'all':
-        query = query.filter(Order.status == status_filter)
-
-    orders = []
-    for order in query.all():
-        try:
-            items = json.loads(order.items)
-        except json.JSONDecodeError:
+            items = json.loads(o.items)
+        except:
             items = []
-        orders.append({
-            'id': order.id,
-            'user_name': order.user_name,
-            'table_number': order.table_number,
+        out.append({
+            'id': o.id,
+            'user_name': o.user_name,
+            'table_number': o.table_number,
             'items': items,
-            'status': order.status,
-            'created_at': order.created_at.strftime('%Y-%m-%d %H:%M:%S')
+            'status': o.status,
+            'created_at': o.created_at.strftime('%Y-%m-%d %H:%M:%S')
         })
+    return jsonify(out), 200
 
-    return render_template('orders.html', orders=orders)
+@app.route('/api/update_status', methods=['POST'])
+def api_update_status():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    status = data.get('status')
+    if not order_id or not status:
+        return jsonify({'error': 'Missing fields'}), 400
+    order = Order.query.get(order_id)
+    if not order:
+        return jsonify({'error': 'Order not found'}), 404
+    order.status = status
+    db.session.commit()
+    return jsonify({'message': 'Status updated'}), 200
 
-# === FEEDBACK ROUTES ===
+# === FEEDBACK pages (basic placeholders) ===
 @app.route('/feedback')
-def feedback():
-    return render_template('feedback.html')
+def feedback_page():
+    return render_template('feedback.html')  # keep simple; you can add a feedback.html later
 
-@app.route('/submit_feedback', methods=['POST'])
-def submit_feedback():
-    try:
-        if request.is_json:
-            data = request.get_json()
-        else:
-            data = request.form
-
-        # Check required fields presence
-        required_fields = ['name', 'email', 'rating']
-        if not all(field in data and data[field] for field in required_fields):
-            return jsonify({'error': 'Missing required fields'}), 400
-
-        # Validate rating as int and within 1-5 (optional)
-        try:
-            rating = int(data['rating'])
-            if rating < 1 or rating > 5:
-                return jsonify({'error': 'Rating must be between 1 and 5'}), 400
-        except ValueError:
-            return jsonify({'error': 'Invalid rating value'}), 400
-
-        new_feedback = Feedback(
-            name=data['name'],
-            email=data['email'],
-            rating=rating,
-            comments=data.get('comments', '')
-        )
-        db.session.add(new_feedback)
-        db.session.commit()
-
-        return jsonify({
-            'success': True,
-            'message': 'Feedback submitted successfully',
-            'redirect': url_for('view_feedback')
-        }), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/reviews')
-def view_feedback():
-    feedback_list = Feedback.query.order_by(Feedback.created_at.desc()).all()
-    feedback_data = []
-    for fb in feedback_list:
-        feedback_data.append({
-            'id': fb.id,
-            'name': fb.name,
-            'email': fb.email,
-            'rating': fb.rating,
-            'comments': fb.comments,
-            'date': fb.created_at.strftime('%Y-%m-%d %H:%M')
-        })
-    return render_template('reviews.html', feedbacks=feedback_data)
-
-# === ORDER MANAGEMENT ENDPOINTS ===
-@app.route('/update_status/<int:table_number>', methods=['POST'])
-def update_order_status(table_number):
-    try:
-        data = request.get_json()
-        valid_statuses = ['pending', 'preparing', 'ready', 'delivered']
-
-        if 'status' not in data or data['status'] not in valid_statuses:
-            return jsonify({'error': 'Invalid status'}), 400
-
-        order = Order.query.filter_by(table_number=table_number, user_name=data.get('user_name')).first()
-        if not order:
-            return jsonify({'error': 'Order not found'}), 404
-
-        order.status = data['status']
-        db.session.commit()
-        return jsonify({'message': 'Status updated successfully'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/delete_order/<int:table_number>', methods=['DELETE'])
-def delete_order(table_number):
-    try:
-        data = request.get_json()
-        order = Order.query.filter_by(table_number=table_number, user_name=data.get('user_name')).first()
-        if not order:
-            return jsonify({'error': 'Order not found'}), 404
-
-        db.session.delete(order)
-        db.session.commit()
-        return jsonify({'message': 'Order deleted successfully'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/update_item', methods=['POST'])
-def update_item():
-    try:
-        data = request.get_json()
-        order = Order.query.filter_by(table_number=data.get('table_number'), user_name=data.get('user_name')).first()
-        if not order:
-            return jsonify({'error': 'Order not found'}), 404
-
-        items = json.loads(order.items)
-        for item in items:
-            if item['name'] == data.get('item_name'):
-                if data.get('action') == 'add':
-                    item['quantity'] += 1
-                elif data.get('action') == 'remove':
-                    item['quantity'] -= 1
-                    if item['quantity'] <= 0:
-                        items.remove(item)
-                break
-
-        order.items = json.dumps(items)
-        db.session.commit()
-        return jsonify({'message': 'Item updated successfully'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/delete_item', methods=['POST'])
-def delete_item():
-    try:
-        data = request.get_json()
-        order = Order.query.filter_by(table_number=data.get('table_number'), user_name=data.get('user_name')).first()
-        if not order:
-            return jsonify({'error': 'Order not found'}), 404
-
-        items = json.loads(order.items)
-        items = [item for item in items if item['name'] != data.get('item_name')]
-
-        order.items = json.dumps(items)
-        db.session.commit()
-        return jsonify({'message': 'Item deleted successfully'}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
-
-# === UTILITY ROUTES ===
+# === HEALTH CHECK ===
 @app.route('/health')
 def health_check():
     try:
@@ -269,16 +132,34 @@ def health_check():
         return jsonify({'status': 'healthy'}), 200
     except Exception as e:
         return jsonify({'status': 'unhealthy', 'error': str(e)}), 500
+    
 
-# === ERROR HANDLERS ===
-@app.errorhandler(404)
-def not_found(error):
-    return jsonify({'error': 'Resource not found'}), 404
+feedback_list = []
 
-@app.errorhandler(500)
-def server_error(error):
-    return jsonify({'error': 'Internal server error'}), 500
+@app.route("/feedback")
+def feedback_form():
+    return render_template("feedback.html")
 
+@app.route("/submit_feedback", methods=["POST"])
+def submit_feedback():
+    name = request.form["name"]
+    email = request.form["email"]
+    rating = int(request.form["rating"])
+    comments = request.form.get("comments", "").strip()
+
+    feedback_list.append({
+        "name": name,
+        "email": email,
+        "rating": rating,
+        "comments": comments,
+        "date": datetime.now().strftime("%Y-%m-%d")
+    })
+
+    return redirect(url_for("reviews"))
+
+@app.route("/reviews")
+def reviews():
+    return render_template("reviews.html", feedbacks=feedback_list)
 # === ENTRY POINT ===
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

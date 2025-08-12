@@ -32,9 +32,10 @@ body {
 
 .logo {
   max-height: 100%;
-  height: auto;
+  height: 80px;
   margin-right: 20px;
   filter: drop-shadow(0 0 8px rgba(90, 141, 123, 0.5));
+  border-radius: 50%;
 }
 
 /* SIDEBAR */

@@ -16,6 +16,10 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='glow.css') }}"
     />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='modal.css') }}"
+    />
     <title>Cafe Menu</title>
   </head>
   <body>
@@ -29,19 +33,18 @@
         />
       </div>
       <h1>WELCOME TO OUR SMART CAFÉ☕</h1>
+      <a class="admin-link" href="{{ url_for('admin_panel') }}"></a>
     </div>
 
-    <!-- Sidebarcart -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <h2 class="page_header">Categories</h2>
 
-      <!-- Search Bar -->
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search menu..." />
         <button onclick="searchMenu()">Search</button>
       </div>
 
-      <!-- Filter Dropdown -->
       <div class="filter-container">
         <label for="filter">Sort by:</label>
         <select id="filter" onchange="filterMenu()">
@@ -51,24 +54,22 @@
         </select>
       </div>
 
-      <!-- Category Tabs -->
       <div class="tab" id="veg-tab" onclick="showVegItems()">Veg Items</div>
       <div class="tab" id="nonveg-tab" onclick="showNonVegItems()">
         Non-Veg Items
       </div>
       <div class="tab" id="drinks-tab" onclick="showdrinks()">Drinks Items</div>
       <div class="tab" id="desert-tab" onclick="showdesert()">
-        Sweets & Deserts Items
+        Sweets & Desserts
       </div>
 
-      <!-- Shopping Cart Section -->
       <div class="cart-section">
         <h3>Your Cart</h3>
         <ul id="cart-items"></ul>
         <p id="cart-total">Total: Rs. 0</p>
         <button onclick="resetCart()" id="reset-btn">🗑️ Reset Cart</button>
         <button
-          onclick="finalOrder()"
+          onclick="openOrderModal()"
           id="final-order-btn"
           class="final-order-btn"
         >
@@ -654,17 +655,15 @@
       </div>
     </div>
 
-    <!-- Chatbot elements -->
-    <div class="chatbot-btn">
+    <div class="chatbot-btn" id="open-chat-btn">
       <img
         src="{{ url_for('static', filename='images/bot.jpg') }}"
         alt="Chat with us"
-        id="chatbot-icon"
       />
     </div>
 
-    <!-- Chat Bot Code -->
-    <div class="chatbot-container" id="chatbot-container" style="display: none">
+    <!-- Chatbot container -->
+    <div class="chatbot-container" id="chatbot-container">
       <div class="chatbot-header">
         <h3>Cafe Assistant</h3>
         <button id="close-chatbot">×</button>
@@ -672,15 +671,15 @@
       <div class="chatbot-messages" id="chatbot-messages">
         <div class="bot-message">Hello! How can I help you today?</div>
       </div>
-      <div class="chatbot-options" id="chatbot-options">
-        <!-- Buttons will be added here dynamically -->
+      <div class="chatbot-options" id="chatbot-options"></div>
+
+      <div class="chatbot-input">
+        <input type="text" id="user-input" placeholder="Type a message..." />
+        <button id="send-msg">Send</button>
       </div>
     </div>
 
-    <!-- Add your chatbot icon somewhere on page, e.g.: -->
-    <button id="chatbot-icon">Chat</button>
-
-    <!-- Order Confirmation Modal -->
+    <!-- Order modal -->
     <div id="order-modal" class="order-modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -724,7 +723,7 @@
       </div>
     </div>
 
-    <!-- Order Success Modal -->
+    <!-- Success modal -->
     <div id="success-modal" class="success-modal">
       <div class="success-content">
         <div class="success-icon">✓</div>
